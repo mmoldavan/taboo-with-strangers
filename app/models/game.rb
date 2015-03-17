@@ -5,9 +5,10 @@ class Game
   field :player1, type: String
   field :player2, type: String
 
-  field :cardsInPlay: type: Array
+  field :cardsInPlay: type: 
 
-  index({ word: 1 }, { unique: true })
+  index({ player1: 1 }, { unique: false })
+  index({ player2: 1 }, { unique: false })
 
   validates_presence_of :player1
   validates_presence_of :player2
