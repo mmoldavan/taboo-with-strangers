@@ -19,17 +19,17 @@ development:
         # 'secondary' will send reads to secondaries, 'primary' sends everything
         # to master. (default: primary)
         # read: secondary_preferred
-        read: master
+        read: primary
 
         # How many times Moped should attempt to retry an operation after
         # failure. (default: The number of nodes in the cluster)
         # max_retries: 20
-        read: 1
+        max_retries: 1
 
         # The time in seconds that Moped should wait before retrying an
         # operation on failure. (default: 0.25)
         # retry_interval: 0.25
-        retry_interval: 0
+        retry_interval: 0.25
         
         # The connection pool size per-node.  This should match or exceed the
         # number of threads for a multi-threaded application. (default: 5)

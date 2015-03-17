@@ -15,7 +15,7 @@ class User
   validates_presence_of :email
   validates_presence_of :password
 
-  validates :age, format: { with: /0-99/, allow_blank: true }
+  validates :age, format: { with: /[0-99]/, allow_blank: true }
 
 
   def before_save

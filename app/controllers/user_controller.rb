@@ -1,4 +1,6 @@
 class UserController < ApplicationController
+  skip_before_filter  :verify_authenticity_token
+
   def index
 
   end
@@ -8,17 +10,46 @@ class UserController < ApplicationController
   end
 
   def create
+    user = User.new({
+      username: params["username"],
+      password: params["password"],
+      email: params["email"],
+      country: params["country"],
+      language: params["langauge"],
+      age: params["age"]
+      });
 
+    if user.save
+      render json:user;
+    else
+      render json: {error: user.errors };
+    end
   end
 
   def update
+    user = User.where({userid: params["userid"]}).first;
+    if user
+      user.username = params["username"];
+      user.password = params["password"];
+      user.email = params["email"];
+      user.country = params["country"];
+      user.language = params["language"];
+      user.age = params["age"];
 
+      user.save!;
+    end
+
+    render json: user;
   end
 
   def show
-    user = {userid: 1, username: 'demo-user', email: 'demo@demo.org', country: 'us', language: 'en', age: '27'}
+    user = User.where({username: params["username"]}).first;
 
-    render json: user
+    if user
+      render json: user;
+    else
+      render json: {error: "User doesn't exist"};
+    end
   end
 
   def destroy
