@@ -1,8 +1,8 @@
-class ActiveCard < Card
+class ActiveCard
   include Mongoid::Document
-  store_in collection: 'active_cards'
+  embedded_in :game
 
-  field :unreadClues, type: Array
-  field :readClues, type: Array
+  embeds_many :clues
 
+  field :card_id, type: String
 end

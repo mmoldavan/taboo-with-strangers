@@ -2,6 +2,8 @@ class Card
   include Mongoid::Document
   store_in collection: 'cards'
 
+  token :field_name => :card_id, :retry_count => 8, :pattern => "C%d5"
+
   field :word, type: String
   field :forbiddenWords, type: Array
   field :allForbiddenWords, type: Array

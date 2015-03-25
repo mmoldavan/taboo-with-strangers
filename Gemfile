@@ -14,6 +14,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'therubyracer'
 
 gem 'mongoid', '~> 4.0.0'
+gem 'mongoid_token'
 gem 'bson_ext'
 
 # Use jquery as the JavaScript library
