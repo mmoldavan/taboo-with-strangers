@@ -5,54 +5,36 @@ class GameController < ApplicationController
 
   end
 
-  def new
+  def automatch
+    game = Game.where({state: 'new'}).first;
 
-  end
+    #Is there a game waiting for a player?
+    if game
+      #join and start
+      game.join(params["userid"]);
 
-  def create
-    user = User.new({
-      username: params["username"],
-      password: params["password"],
-      email: params["email"],
-      country: params["country"],
-      language: params["langauge"],
-      age: params["age"]
-      });
+      save_and_render(game);
 
-    if user.save
-      render json:user;
+    #Create a game
     else
-      render json: {error: user.errors };
-    end
-  end
+      game = Game.initiate_automatch(params["userid"]);
 
-  def update
-    user = User.where({userid: params["userid"]}).first;
-    if user
-      user.username = params["username"];
-      user.password = params["password"];
-      user.email = params["email"];
-      user.country = params["country"];
-      user.language = params["language"];
-      user.age = params["age"];
-
-      user.save!;
+      save_and_render(game);
     end
 
-    render json: user;
   end
 
-  def show
-    user = User.where({username: params["username"]}).first;
+  def challenge
+    game = Game.initiate_challenge(params["userid"],params["opponent"]);
 
-    if user
-      render json: user;
+    save_and_render(game);
+  end
+
+  def save_and_render(game)
+    if game.save
+      render json: game;
     else
-      render json: {error: "User doesn't exist"};
+      render json: {error: game.errors };
     end
-  end
-
-  def destroy
-
   end
 end

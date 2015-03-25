@@ -11,6 +11,9 @@ Rails.application.routes.draw do
 
   resources :user
 
+  post 'game/automatch' => 'game/automatch'
+  post 'game/challenge' => 'game/challenge'
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
