@@ -16,9 +16,23 @@ class Game
   index({ state: 1}, { unique: false })
 
   validate :valid_state
+  validate :valid_player1
+  validate :valid_player2
 
   def valid_state
-    return ['new','pending','inprogress', 'complete'].include? self.state
+    errors.add(:state, 'invalid state') unless ['new','pending','inprogress', 'complete'].include? self.state
+  end
+
+  def valid_player1
+    errors.add(:player1, 'unknown user') unless User.where(user_id: self.player1).exists?
+  end
+
+  def valid_player2
+    if self.player2 != nil
+      errors.add(:player2, 'unknown user') unless User.where(user_id: self.player2).exists?
+    end
+
+    errors.add(:player2, 'cannot be the same as player1') if self.player1 == self.player2
   end
 
   def start
