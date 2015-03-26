@@ -1,7 +1,7 @@
 class Clue
   include Mongoid::Document
   include Mongoid::Token
-  store_in collections: 'clues'
+  store_in collection: 'clues'
   embedded_in :active_card
 
   token :field_name => :clue_id, :retry_count => 8, :pattern => "CL%d7"

@@ -6,11 +6,10 @@ class GameController < ApplicationController
   end
 
   def automatch
-    game = Game.where({state: 'new'}).first;
+    game = Game.where({state: 'unmatched'}).first;
 
     #Is there a game waiting for a player?
     if game
-      #join and start
       game.join(params["userid"]);
 
       save_and_render(game);

@@ -20,7 +20,7 @@ class Game
   validate :valid_player2
 
   def valid_state
-    errors.add(:state, 'invalid state') unless ['new','pending','inprogress', 'complete'].include? self.state
+    errors.add(:state, 'invalid state') unless ['unmatched','pending','inprogress', 'complete'].include? self.state
   end
 
   def valid_player1
@@ -47,7 +47,7 @@ class Game
   def self.initiate_automatch(player)
     return Game.new({
       player1: player,
-      state: 'new'
+      state: 'unmatched'
       });
   end
 
