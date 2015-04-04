@@ -31,7 +31,7 @@ class UserController < ApplicationController
     if user.save
       render json: user;
     else
-      render json: {error: user.errors };
+      render json: {error: user.errors }, status: 400;
     end
   end
 
@@ -57,7 +57,7 @@ class UserController < ApplicationController
     if user
       render json: user;
     else
-      render json: {error: "User doesn't exist"};
+      render json: {error: "User doesn't exist"}, status: 400;
     end
   end
 
