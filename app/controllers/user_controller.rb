@@ -2,7 +2,16 @@ class UserController < ApplicationController
   skip_before_filter  :verify_authenticity_token
 
   def index
+    users = [];
 
+    User.each do |user|
+      users << {
+        user_id: user.user_id,
+        username: user.username
+      }
+    end
+
+    render json: users;
   end
 
   def new
@@ -20,7 +29,7 @@ class UserController < ApplicationController
       });
 
     if user.save
-      render json:user;
+      render json: user;
     else
       render json: {error: user.errors };
     end

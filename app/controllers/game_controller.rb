@@ -29,6 +29,23 @@ class GameController < ApplicationController
     save_and_render(game);
   end
 
+  def list_by_user
+    games = [];
+
+    Game.any_of({player1: params["userid"]}, {player2: params["userid"]}).each do |game|
+      games << {
+        game_id: game.game_id,
+        player1: game.player1,
+        player2: game.player2,
+        score: game.score,
+        state: game.state
+      }
+    end
+
+    render json: games
+
+  end
+
   def save_and_render(game)
     if game.save
       render json: game;

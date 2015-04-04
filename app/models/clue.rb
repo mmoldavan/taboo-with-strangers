@@ -1,6 +1,7 @@
 class Clue
   include Mongoid::Document
   include Mongoid::Token
+  include Mongoid::Timestamps
   store_in collection: 'clues'
   embedded_in :active_card
 

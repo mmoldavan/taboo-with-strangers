@@ -1,6 +1,8 @@
 class Game
   include Mongoid::Document
   include Mongoid::Token
+  include Mongoid::Timestamps
+
   store_in collection: 'games'
 
   embeds_many :active_cards
@@ -49,6 +51,8 @@ class Game
       player1: player,
       state: 'unmatched'
       });
+
+    #Add some random cards here.
   end
 
   def self.initiate_challenge(player, opponent)

@@ -1,18 +1,17 @@
 Rails.application.routes.draw do
-  get 'home/index'
-
-  get 'user/create'
-
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
   root 'home#index'
 
-  resources :user
+  get 'user' => 'user#index'
+  post 'user' => 'user#create'
+  post 'user/:userid' => 'user#update'
+  get 'user/:userid/games' => 'game#list_by_user'
 
-  post 'game/automatch' => 'game/automatch'
-  post 'game/challenge' => 'game/challenge'
+  post 'game/automatch' => 'game#automatch'
+  post 'game/challenge' => 'game#challenge'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

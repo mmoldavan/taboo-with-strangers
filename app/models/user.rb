@@ -1,6 +1,8 @@
 class User
   include Mongoid::Document
   include Mongoid::Token
+  include Mongoid::Timestamps
+  
   store_in collection: 'users'
   token :field_name => :user_id, :retry_count => 8, :pattern => "U%d9"
 

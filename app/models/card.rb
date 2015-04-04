@@ -1,6 +1,8 @@
 class Card
   include Mongoid::Document
   include Mongoid::Token
+  include Mongoid::Timestamps
+  
   store_in collection: 'cards'
 
   token :field_name => :card_id, :retry_count => 8, :pattern => "C%d5"
