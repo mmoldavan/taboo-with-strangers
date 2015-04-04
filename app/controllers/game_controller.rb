@@ -59,11 +59,43 @@ class GameController < ApplicationController
 
   end
 
+  def mark_clue_read
+    game = Game.where({game_id: params["gameid"]}).first;
+
+    card = game.active_cards.where({card_id: params["cardid"]}).first;
+
+    clue = card.where({clue_id: params["clueid"]}).first;
+
+    clue.read = true;
+
+    save_and_render(game);
+  end
+
+  def add_clue
+    game = Game.where({game_id: params["gameid"]}).first;
+
+    card = game.active_cards.where({card_id: params["cardid"]}).first;
+
+    card.clues << Clue.new({
+      clue_id: card.clues.length + 1,
+      clue_text: params["clue_text"],
+      read: false
+    });
+
+    save_and_render(game);
+  end
+
+  def retrieve
+    game = Game.where({game_id: params["gameid"]}).first;
+
+    render json: game;
+  end
+
   def save_and_render(game)
     if game.save
       render json: game;
     else
-      render json: {error: game.errors };
+      render json: {error: game.errors }, status: 400;
     end
   end
 end

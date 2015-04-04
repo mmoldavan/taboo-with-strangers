@@ -13,10 +13,14 @@ Rails.application.routes.draw do
   post 'game/automatch' => 'game#automatch'
   post 'game/challenge' => 'game#challenge'
   get 'game/:gameid/accept' => 'game#accept'
+  get 'game/:gameid' => 'game#retrieve'
+  post 'game/:gameid/cards/:cardid/clue' => 'game#add_clue'
+  post 'game/:gameid/cards/:cardid/clue/:clueid/markread' => 'game#mark_clue_read'
 
   get 'card' => 'card#index'
   post 'card' => 'card#create'
   post 'card/:cardid' => 'card#update'
+
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

@@ -5,4 +5,6 @@ class ActiveCard
   embeds_many :clues
 
   field :card_id, type: String
+  
+  field :state, type: String, default: 'unplayed'
 end

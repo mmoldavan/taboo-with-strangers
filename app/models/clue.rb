@@ -2,11 +2,10 @@ class Clue
   include Mongoid::Document
   include Mongoid::Token
   include Mongoid::Timestamps
-  store_in collection: 'clues'
+
   embedded_in :active_card
 
-  token :field_name => :clue_id, :retry_count => 8, :pattern => "CL%d7"
-
+  field :clue_id, type: Integer
   field :clue_text, type: String
   field :read, type: Boolean
 

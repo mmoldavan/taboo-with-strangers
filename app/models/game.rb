@@ -12,6 +12,7 @@ class Game
   field :player2, type: String
   field :score, type: Integer, default: 0
   field :state, type: String
+  field :turn, type: String
 
   index({ player1: 1 }, { unique: false })
   index({ player2: 1 }, { unique: false })
@@ -39,6 +40,7 @@ class Game
 
   def start
     self.state = 'inprogress';
+    self.turn = self.player2;
   end
 
   def join(player)
@@ -46,21 +48,52 @@ class Game
     self.start();
   end
 
-  def self.initiate_automatch(player)
-    return Game.new({
-      player1: player,
-      state: 'unmatched'
-      });
+  def init_cards
+    randoms = []
+    card_count = Card.count;
+    self.active_cards = [];
 
-    #Add some random cards here.
+    5.times do
+      #
+      #loop do
+      #  random = rand(card_count);
+      #  break if !randoms.include? random
+      #end
+      
+      #randoms << random unless randoms.include? rand(card_count);
+
+      randoms << rand(card_count);
+    end
+
+    randoms.each do |random|
+      card = Card.skip(random).first;
+
+      self.active_cards << ActiveCard.new({
+        card_id: card.card_id
+      })
+    end
+  end
+
+  def self.initiate_automatch(player)
+    game = Game.new({
+      player1: player,
+      state: 'unmatched',
+      turn: player
+    });
+    game.init_cards();
+
+    return game;
   end
 
   def self.initiate_challenge(player, opponent)
-    return Game.new({
+    game = Game.new({
       player1: player,
       player2: opponent,
       state: 'pending'
       });
+    game.init_cards();
+
+    return game;
   end
 
 end
