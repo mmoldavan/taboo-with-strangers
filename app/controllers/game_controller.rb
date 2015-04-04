@@ -29,6 +29,19 @@ class GameController < ApplicationController
     save_and_render(game);
   end
 
+  def accept
+    game = Game.where({game_id: params["gameid"]}).first;
+
+    if game.state == 'pending'
+      game.state = 'inprogress'
+      game.save!
+
+      render json: game;
+    else
+      render json: {error: 'game not pending'}, status: 400;
+    end
+  end
+
   def list_by_user
     games = [];
 
