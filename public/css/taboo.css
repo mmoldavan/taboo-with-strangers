@@ -1,0 +1,20 @@
+body {
+	padding-bottom: 30px;
+	padding-top: 70px;
+}
+.navbar-brand.active { color:#fff; }
+.theme-showcase .navbar .container { width: auto; }
+.bg-primary, .bg-success, .bg-info, .bg-warning, .bg-danger { padding: 15px; }
+.navbar-inverse {
+  background-image: -webkit-linear-gradient(top, #4c4385 0%, #1d1551 100%);
+  background-image:      -o-linear-gradient(top, #4c4385 0%, #1d1551 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#4c4385), to(#1d1551));
+  background-image:         linear-gradient(to bottom, #4c4385 0%, #1d1551 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff4c4385', endColorstr='#ff1d1551', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+}
+.main-word { color: #4c4385; margin-bottom: 10px; }
+.time-counter { color: #d9534f; font-weight:bold; }
+.forbidden-words { padding-left: 0; }
+.forbidden-words li { list-style:none; }

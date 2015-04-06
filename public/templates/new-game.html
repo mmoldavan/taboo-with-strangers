@@ -1,0 +1,11 @@
+<div>
+    <p><a href="#/random" class="btn btn-block btn-warning btn-lg" role="button">Random Match!</a></p>
+	Search: <input ng-model="searchText" />
+    <h3>All users</h3>
+    <ul>
+    	<li ng-repeat="user in users | filter:searchText">
+        	<h2>{{user.username}}</h2>
+            <p><a href="">Send New Game Request</a></p>
+        </li>
+    </ul>
+</div>

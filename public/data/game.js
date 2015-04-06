@@ -1,0 +1,39 @@
+{
+	"_id":{"$oid":"552067c26c6174802d000000"},
+	"active_cards":
+	[	
+		{
+			"_id": {"$oid":"552067c26c6174802d010000"},
+			"card_id":"C76220",
+			"state":"unplayed"
+		},
+		{
+			"_id":{"$oid":"552067c26c6174802d020000"},
+			"card_id":"C01737",
+			"state":"unplayed"
+		},
+		{
+			"_id":{"$oid":"552067c26c6174802d030000"},
+			"card_id":"C29911",
+			"state":"unplayed"
+		},
+		{
+			"_id":{"$oid":"552067c26c6174802d040000"},
+			"card_id":"C29911",
+			"state":"unplayed"
+		},
+		{
+			"_id":{"$oid":"552067c26c6174802d050000"},
+			"card_id":"C68937",
+			"state":"unplayed"
+		}
+	],
+	"created_at":"2015-04-04T22:37:54.244Z",
+	"game_id":"G724953213",
+	"player1":"U414803370",
+	"player2":null,
+	"score":0,
+	"state":"unmatched",
+	"turn":"U414803370",
+	"updated_at":"2015-04-04T22:37:54.244Z"
+}

@@ -1,0 +1,25 @@
+<div>
+    <h2>UserName</h2>
+    <p>Total Points</p>
+    <a href="#/new-game" class="btn btn-block btn-warning btn-lg" role="button">Start New Game</a>
+    
+    <h3>My New Game Requests</h3>
+    <ul>
+    	<li ng-repeat="game in myGames" ng-if="game.state == 'unaccepted'">
+        	<h4>{{game.player2}}</h4>
+            <p class="game-state">{{game.state}}</p>
+            <p class="score"></p>
+            <p><a href="">Accept Game Invite</a></p>
+        </li>
+    </ul>
+    
+    <h3>My Current Games</h3>
+    <ul>
+    	<li ng-repeat="game in myGames" ng-if="game.state != 'unaccepted'">
+        	<h4>{{game.player2}}</h4>
+            <p class="game-state">{{game.state}}</p>
+            <p class="score">Current score: {{game.score}}</p>
+            <p><a href="">Continue Game</a></p>
+        </li>
+    </ul>
+</div>

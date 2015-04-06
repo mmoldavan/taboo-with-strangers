@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation (symbol)</span>
+        <span ng-repeat="i in [1,2,3]" class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" ng-class="{ active : activeLink('/home')}" id="home" href="#/home">TwS</a>
+    </div>
+    
+    <!--mobile collapsible nav-->
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li  ng-class="{ active : activeLink('/about')}"><a href="#/about">About</a></li>
+      </ul>
+    </div>
+</div>

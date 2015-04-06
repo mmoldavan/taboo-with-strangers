@@ -1,0 +1,41 @@
+<div class="row">
+	<div class="col-xs-6">
+    	<p>Player 2: {{game.otherPlayer}}</p>
+    </div>
+    <div class="col-sm-2 col-sm-offset-4 col-xs-4 col-xs-offset-2">
+    	<p>Score: {{game.score}}</p>
+    </div>
+</div>
+<p class="time-counter text-center">Time Remaining: {{game.timer}}</p>
+
+<!-- !!CLUE!! -->
+<div ng-if="game.turnType == 'clue'">
+    <p class="main-word lead text-center">{{activeCard.main_word}}</p>
+    <ul class="forbidden-words text-center">
+        <li ng-repeat="word in activeCard.forbidden_words" class="text-danger">
+            {{word}}
+        </li>
+    </ul>
+    <div ng-if="game.state == 'go'">
+        <p><textarea name="clue-text" class="form-control" rows="2"></textarea></p>
+        <p><a href="" class="btn btn-block btn-warning" role="button">Add Clue</a></p>
+        <div class="row">
+            <div class="col-xs-6"><p><a href="" class="btn btn-block btn-danger" role="button">Skip Card</a></p></div>
+            <div class="col-xs-6"><p><a href="" class="btn btn-block btn-info" role="button">Send to Guesser</a></p></div>
+        </div>
+    </div>
+    <div ng-if="game.state == 'wait'">
+    	<p class="bg-warning">Awaiting response from {{game.otherPlayer}}</p>
+    </div>
+</div>
+
+<!-- !!GUESS!! -->
+<div ng-if="game.turnType == 'guess'">
+    <p ng-repeat="clue in card.clues">{{word}}</p>
+    <p><textarea name="guess-text" class="form-control" rows="1"></textarea></p>
+    <p><a href="" class="btn btn-block btn-warning" role="button">Submit Guess</a></p>
+    <div class="row">
+        <div class="col-xs-6"><p><a href="" class="btn btn-block btn-danger" role="button">Skip Card</a></p></div>
+        <div class="col-xs-6"><p><a href="" class="btn btn-block btn-info" role="button">More Clues</a></p></div>
+    </div>
+</div>

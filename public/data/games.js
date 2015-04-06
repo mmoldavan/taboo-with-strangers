@@ -1,0 +1,23 @@
+[
+	{
+		"game_id":"G663998352",
+		"player1":"U400142259",
+		"player2":"U678177199",
+		"score":0,
+		"state":"inprogress"
+	},
+	{
+		"game_id":"G308697897",
+		"player1":"U400142259",
+		"player2":"U678177199",
+		"score":0,
+		"state":"pending"
+	},
+	{
+		"game_id":"G714363699",
+		"player1":"U400142259",
+		"player2":"U678177199",
+		"score":0,
+		"state":"unaccepted"
+	}
+]
