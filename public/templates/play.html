@@ -6,23 +6,26 @@
     	<p>Score: {{game.score}}</p>
     </div>
 </div>
-<p class="time-counter text-center">Time Remaining: {{game.timer}}</p>
+<p class="time-counter text-center">Time Remaining: <span round-timer="">{{game.timer}}</span></p>
 
 <!-- !!CLUE!! -->
 <div ng-if="game.turnType == 'clue'">
-    <p class="main-word lead text-center">{{activeCard.main_word}}</p>
+    <p class="main-word lead text-center">{{allCards[currCard].main_word}}</p>
     <ul class="forbidden-words text-center">
-        <li ng-repeat="word in activeCard.forbidden_words" class="text-danger">
+        <li ng-repeat="word in allCards[currCard].forbidden_words" class="text-danger">
             {{word}}
         </li>
     </ul>
     <div ng-if="game.state == 'go'">
-        <p><textarea name="clue-text" class="form-control" rows="2"></textarea></p>
-        <p><a href="" class="btn btn-block btn-warning" role="button">Add Clue</a></p>
+        <p><textarea name="clue-text" ng-model="clientInput.clueText" class="form-control" rows="2"></textarea></p>
+        <p><a class="btn btn-block btn-warning" role="button" ng-click="addClue()">Add Clue</a></p>
         <div class="row">
-            <div class="col-xs-6"><p><a href="" class="btn btn-block btn-danger" role="button">Skip Card</a></p></div>
-            <div class="col-xs-6"><p><a href="" class="btn btn-block btn-info" role="button">Send to Guesser</a></p></div>
+            <div class="col-xs-6"><p><a class="btn btn-block btn-danger" role="button" ng-click="nextCard()">Skip Card</a></p></div>
+            <div class="col-xs-6"><p><a class="btn btn-block btn-info" role="button" ng-click="submitClues()">Send to Guesser</a></p></div>
         </div>
+        <ol id="given-clues">
+        	<li ng-repeat="clue in clues | orderBy:clue.num:reverse">{{clue.text}}</li>
+        </ol>
     </div>
     <div ng-if="game.state == 'wait'">
     	<p class="bg-warning">Awaiting response from {{game.otherPlayer}}</p>

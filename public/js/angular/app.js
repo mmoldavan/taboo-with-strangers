@@ -1,4 +1,4 @@
-var tabooApp = angular.module('tabooApp', ['ngRoute','tabooControllers', 'tabooFilters']);
+var tabooApp = angular.module('tabooApp', ['ngRoute','tabooControllers', 'tabooFilters', 'tabooDirectives']);
 
 tabooApp.config(['$routeProvider',
   function($routeProvider) {
