@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   post 'user/login' => 'user#login'
   post 'user/:userid' => 'user#update'
   get 'user/:userid/games' => 'game#list_by_user'
+  get 'user/:userid/users' => 'user#index_with_playing'
 
   post 'game/automatch' => 'game#automatch'
   post 'game/challenge' => 'game#challenge'

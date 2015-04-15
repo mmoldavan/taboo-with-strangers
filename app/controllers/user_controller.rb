@@ -14,6 +14,27 @@ class UserController < ApplicationController
     render json: users;
   end
 
+  def index_with_playing
+    users = [];
+    playing = [];
+
+    Game.any_of({player1: params["userid"]}, {player2: params["userid"]}).each do |game|
+      playing << game.player1 == params["userid"] ? game.player2 : game.player1;
+    end
+
+    User.each do |user|
+      users << {
+        user_id: user.user_id,
+        username: user.username,
+        game_multiplier: 1.5,
+        currently_playing: playing.include?(user.user_id),
+        online: false
+      }
+    end
+
+    render json: users;
+  end
+
   def new
 
   end
@@ -62,8 +83,8 @@ class UserController < ApplicationController
   def login
     user = User.where({username: params["username"]}).first;
 
-    if user 
-      render json: {valid_user: user.password == params["password"]};
+    if user && user.password == params["password"]
+      render json: {valid_user: true, user_id: user.user_id};
     else
       render json: {valid_user: false};
     end
