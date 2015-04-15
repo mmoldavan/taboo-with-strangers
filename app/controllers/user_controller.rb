@@ -24,8 +24,7 @@ class UserController < ApplicationController
       password: params["password"],
       email: params["email"],
       country: params["country"],
-      language: params["langauge"],
-      age: params["age"]
+      city: params["city"]
       });
 
     if user.save
@@ -42,8 +41,7 @@ class UserController < ApplicationController
       user.password = params["password"];
       user.email = params["email"];
       user.country = params["country"];
-      user.language = params["language"];
-      user.age = params["age"];
+      user.city = params["city"];
 
       user.save!;
     end
@@ -59,6 +57,17 @@ class UserController < ApplicationController
     else
       render json: {error: "User doesn't exist"}, status: 400;
     end
+  end
+
+  def login
+    user = User.where({username: params["username"]}).first;
+
+    if user 
+      render json: {valid_user: user.password == params["password"]};
+    else
+      render json: {valid_user: false};
+    end
+
   end
 
   def destroy

@@ -2,7 +2,9 @@ class GameController < ApplicationController
   skip_before_filter  :verify_authenticity_token
 
   def index
+    game = Game.where({game_id: params["gameid"]}).first;
 
+    render json: game;
   end
 
   def automatch

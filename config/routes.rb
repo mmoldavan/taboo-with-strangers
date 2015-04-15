@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   get 'user' => 'user#index'
   post 'user' => 'user#create'
+  post 'user/login' => 'user#login'
   post 'user/:userid' => 'user#update'
   get 'user/:userid/games' => 'game#list_by_user'
 
