@@ -48,12 +48,18 @@ class GameController < ApplicationController
     games = [];
 
     Game.any_of({player1: params["userid"]}, {player2: params["userid"]}).each do |game|
+      player2 = game.player1 == params["userid"] ? game.player2 : game.player1;
+      player2_name = User.where({user_id: player2}).first.username;
+
       games << {
         game_id: game.game_id,
-        player1: game.player1,
-        player2: game.player2,
+        player2: {
+          id: player2,
+          username: player2_name
+          },
         score: game.score,
-        state: game.state
+        state: game.state,
+
       }
     end
 
