@@ -66,9 +66,14 @@ class GameController < ApplicationController
 
     game.score = params["score"];
     game.turns << {};
-    game.turns.last.timer = params["timer"];
-    game.turns.last.result = params["user_input"]["result"];
-    game.turns.last.responses = params["user_input"]["responses"];
+    game.turns.last[:timer] = params["timer"];
+    game.turns.last[:result] = params["user_input"]["result"];
+    game.turns.last[:responses] = params["user_input"]["responses"];
+    game.turns.last[:type] = game.current_turn_type;
+    game.current_round += 1 if game.turns.last[:result] == 'guessed';
+
+    game.current_turn_type = game.current_turn_type == "clue" ? "guess" : "clue";
+    game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
 
     game.save
 
@@ -171,7 +176,8 @@ class GameController < ApplicationController
           },
         score: game.score,
         state: game.state,
-        awaiting: awaiting
+        awaiting: awaiting,
+        game_multipler: game.multipler
 
       }
   end

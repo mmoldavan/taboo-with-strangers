@@ -9,8 +9,9 @@ class Game
   field :player1, type: String
   field :player2, type: String
   field :score, type: Integer, default: 0
+  field :multiplier, type: Float, default: 1.5
   field :state, type: String
-  field :current_round, type: String, default: 0
+  field :current_round, type: Integer, default: 0
   field :awaiting, type: String
   field :turns, type: Array, default: []
   field :current_turn_type, type: String, default: "clue"
@@ -40,7 +41,7 @@ class Game
   end
 
   def start
-    self.current_round = 1;
+    self.current_round = 0;
   end
 
   def join(player)
@@ -57,11 +58,11 @@ class Game
   def previous_turn
     if self.turns.length > 0
       return {
-        result: self.turns.last.result,
-        responses: self.turns.last.responses,
-        card_id: self.turns.last.card_id,
-        timer: self.turns.last.timer,
-        type: self.turns.last.type
+        result: self.turns.last[:result],
+        responses: self.turns.last[:responses],
+        card_id: self.turns.last[:card_id],
+        timer: self.turns.last[:timer],
+        type: self.turns.last[:type]
       }
     else
       return {
