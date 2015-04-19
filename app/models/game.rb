@@ -5,14 +5,11 @@ class Game
 
   store_in collection: 'games'
 
-  embeds_many :active_cards
-
   token :field_name => :game_id, :retry_count => 8, :pattern => "G%d9"
   field :player1, type: String
   field :player2, type: String
   field :score, type: Integer, default: 0
   field :state, type: String
-  field :turn_type, type: String
   field :current_round, type: String
   field :awaiting, type: String
   field :turns, type: Array
@@ -42,8 +39,7 @@ class Game
   end
 
   def start
-    self.state = 'inprogress';
-    self.turn = self.player2;
+    self.current_round = 1;
   end
 
   def join(player)
@@ -54,27 +50,6 @@ class Game
   def init_cards
     randoms = []
     card_count = Card.count;
-    self.active_cards = [];
-
-    5.times do
-      #
-      #loop do
-      #  random = rand(card_count);
-      #  break if !randoms.include? random
-      #end
-      
-      #randoms << random unless randoms.include? rand(card_count);
-
-      randoms << rand(card_count);
-    end
-
-    randoms.each do |random|
-      card = Card.skip(random).first;
-
-      self.active_cards << ActiveCard.new({
-        card_id: card.card_id
-      })
-    end
   end
 
 
@@ -89,8 +64,8 @@ class Game
   def self.initiate_automatch(player)
     game = Game.new({
       player1: player,
-      state: 'unmatched',
-      turn: player
+      state: 'init',
+      awaiting: player
     });
     game.init_cards();
 
@@ -101,7 +76,8 @@ class Game
     game = Game.new({
       player1: player,
       player2: opponent,
-      state: 'pending'
+      state: 'init',
+      awaiting: opponent
       });
     game.init_cards();
 

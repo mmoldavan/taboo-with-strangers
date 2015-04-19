@@ -18,9 +18,8 @@ Rails.application.routes.draw do
   get 'game/:gameid/accept' => 'game#accept'
   get 'game/:gameid' => 'game#retrieve'
   post 'game/:gameid' => 'game#update_game'
-  post 'game/:gameid/cards/:cardid/clue' => 'game#add_clue'
-  post 'game/:gameid/cards/:cardid/clue/:clueid/markread' => 'game#mark_clue_read'
-
+  get 'game/:gameid/nextcards' => 'game#get_cards'
+  
   get 'card' => 'card#index'
   post 'card' => 'card#create'
   post 'card/:cardid' => 'card#update'
