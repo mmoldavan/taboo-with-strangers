@@ -1,0 +1,13 @@
+<div>
+    <p><a href="#/random" class="btn btn-block btn-warning btn-lg" role="button">Random Match!</a></p>
+	Search: <input ng-model="searchText" />
+    <h3>All users</h3>
+    <ul>
+    	<li ng-repeat="user in users | filter:searchText">
+        	<h4>{{user.username}}</h4>
+            <p ng-class="{success: user.online}">{{user.online ? "Online" : "Offline"}}</p>
+            <p ng-if="user.currently_playing">(Already Playing)</p>
+            <p><a ng-click="newGame(user.user_id)" class="btn btn-info">Send New Game Request</a></p>
+        </li>
+    </ul>
+</div>
