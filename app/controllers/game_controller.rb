@@ -59,6 +59,7 @@ class GameController < ApplicationController
           },
         score: game.score,
         state: game.state,
+        awaiting: game.awaiting == params["userid"] ? "you","player2"
 
       }
     end

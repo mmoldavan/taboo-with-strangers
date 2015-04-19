@@ -48,4 +48,18 @@ class CardController < ApplicationController
     end
   end
 
+  def add_clue
+    
+  end
+
+  def retrieve
+    card = Card.where({card_id: params["cardid"]}).first;
+
+    if card.save
+      render json: card;
+    else
+      render json: {error: card.errors }, status: 400;
+    end
+  end
+
 end

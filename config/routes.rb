@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   get 'card' => 'card#index'
   post 'card' => 'card#create'
   post 'card/:cardid' => 'card#update'
+  get 'card/:cardid' => 'card#retrieve'
 
 
   # Example of regular route:
