@@ -20,12 +20,20 @@ tabooApp.config(['$routeProvider',
         controller: 'dashboard'
       }).
 	  when('/new-game', {
-        templateUrl: 'templates/new-game.html',
+        templateUrl: 'templates/game-new.html',
         controller: 'newGame'
       }).
-	  when('/play', {
+	  when('/game-monitor/:gameID', {
+        templateUrl: 'templates/game-monitor.html',
+        controller: 'monitor'
+      }).
+	  when('/play/:gameID', {
         templateUrl: 'templates/play.html',
         controller: 'play'
+      }).
+	  when('/game-end/:gameID', {
+        templateUrl: 'templates/game-end.html',
+        controller: 'endGame'
       }).
       otherwise({
         redirectTo: '/home'

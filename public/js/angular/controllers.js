@@ -1,6 +1,12 @@
 // JavaScript Document
 var tabooControllers = angular.module('tabooControllers', []);
 
+tabooControllers.controller('staticContent', ['$scope','$location', function($scope,$location) {
+	$scope.activeLink = function(linkLoc){
+		return linkLoc === $location.path();		
+	}
+}])
+
 tabooControllers.controller('dashboard', ['$scope', '$http', function ($scope, $http) {
   	$http.get('data/games.js').success(function(data) {
 		$scope.myGames = data;
@@ -11,85 +17,217 @@ tabooControllers.controller('newGame', ['$scope','$http', function($scope,$http)
 	$http.get('data/users.js').success(function(data) {
 		$scope.users = data;
   	});
+	$scope.newGame = function(whichPlayer) {
+		var sendData = {};
+		sendData.userid = "U123456"; //TODO: replace with dynamic user
+		sendData.opponent = whichPlayer;
+		console.log(sendData); //TODO: replace with POST
+		window.location = '#/dashboard';	
+	}
 }])
 
-tabooControllers.controller('play', ['$scope','$http', function($scope,$http) {
-	$http.get('data/G724953213.js').success(function(data) {
+tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
+	$scope.checkGameStatus = function() {
+		$http.get('data/checkGameState.js').success(function(response) {
+			if (response.state != 'complete' && response.awaiting == 'you') {
+				clearInterval(repeatCheck);
+				window.location = '#/play/' + $routeParams.gameID;
+			}
+			if (response.state == 'complete') {
+				clearInterval(repeatCheck);
+				window.location = '#/end-game/' + $routeParams.gameID;
+			}
+			console.log(response);
+		})
+	}
+	
+	var repeatCheck = setInterval($scope.checkGameStatus, 20000); // check every 20 secs
+}])
+
+tabooControllers.controller('play', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
+	$http.get('data/'+$routeParams.gameID+'.js').success(function(data) {
 		$scope.game = data;
-		$scope.game.timer = data.timer;
-		$scope.playedCards = [];
-		$scope.currCard = 0;
+		$scope.clientInput = {};
 		
-		if ($scope.game.turnType == 'clue')
+		/** INITIALIZE CLUES **/
+		if ($scope.game.turn_type == 'clue')
 		{
-			$scope.getCards();
-		}		
-  	});
+			$scope.clues = [];	
+			$scope.displayClues = [];
+			// if we are playing the same card as last time, fetch it
+			if ($scope.game.turn_previous.end == 'sameCard') {
+				$http.get('data/C12345.js').success(function(cardData) {
+					$scope.allCards =  [cardData];
+					$scope.playedCards = [];
+					$scope.currCard = 0;						
+				})
+			}
+			else //otherwise get all new cards
+				$scope.getCards();
+			
+			$scope.game.updateMessage = $scope.game.player2;
+			switch($scope.game.turn_previous.end) {
+				case 'guessed':
+					$scope.game.updateMessage += " guessed correctly. Time for a new card!";
+				case 'skipped':
+					$scope.game.updateMessage += " requested to skip the current card. Time for a new card!"
+				case 'sameCard':
+					$scope.game.updateMessage += " was not able to guess the card during their turn. Guesses:";
+				case 'endRound':
+					$scope.game.udpateMessage = "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";	
+			}
+			$scope.game.updateMessageShow = 'yes';
+			setTimeout(function() { angular.element('#dismiss-msg').trigger('click'); }, 7000);
+		}
+		/** INITIALIZE GUESSING **/
+		else if ($scope.game.turn_type == 'guess')
+		{
+			$scope.guesses = [];
+			$scope.displayGuesses = [];
+			// get the card we are guessing against
+			$http.get('data/'+data.card+'.js').success(function(cardData) {
+				$scope.card = cardData;
+			})
+			
+			// set the update message appropriately
+			$scope.game.updateMessage = $scope.game.player2;
+			switch($scope.game.turn_previous.end) {
+				case 'skipped':
+					$scope.game.updateMessage += " requested to skip the current card. You'll see clues for the new card."
+				case 'sameCard':
+					$scope.game.updateMessage += " has sent you new clues.";
+				case 'endRound':
+					$scope.game.udpateMessage = "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";	
+			}
+			$scope.game.updateMessageShow = 'yes';
+			setTimeout(function() { angular.element('#dismiss-msg').trigger('click'); }, 7000);
+		}
+	});
 	
-	$scope.clues = [];
-	$scope.clientInput = {};
+	$scope.dismissUpdate = function() {
+		$scope.game.updateMessageShow = 'no';	
+	}
 	
+	$scope.initPostObject = function() {
+		var sendData = {};
+		sendData.user_input = {};
+		sendData.user_id = "U1234567";
+		sendData.timer = $scope.game.timer;
+		sendData.score = $scope.game.score;
+		return sendData;
+	}
+	
+	$scope.endRound = function() {
+		var s = $scope.initPostObject();
+		s.user_input.responses = $scope.game.turn_type == 'clue' ? $scope.clues : $scope.guesses;
+		s.user_input.end = "endRound";
+		console.log('timer end. POST:'); //TODO: replace with real post
+		console.log(s);
+		//window.location = '#/game-monitor/'+$scope.game.game_id;	//TODO: turn this back on when we're ready
+	}
+	
+	// **START: ClUE FUNCS**	
 	$scope.addClue = function() {
-		var len = $scope.clues.length;
-		if ($scope.clientInput.clueText != '') {
+		if ($scope.clientInput.clueText != '' && $scope.clientInput.clueText != null) {
 			/***TODO: implement function for checking if it's taboo!**/
-			len++;
-			var thisClue = new Object();
-			thisClue.num = len;
-			thisClue.text = $scope.clientInput.clueText;
-			$scope.clues.push(thisClue);
+			$scope.displayClues.splice(0, 0, $scope.clientInput.clueText);
+			$scope.clues.push($scope.clientInput.clueText);
 			$scope.clientInput.clueText = '';
-		}	
+		}
+		else {
+			alert('Your clue has no text');	
+		}
+	
 	}
 	
 	$scope.nextCard = function() {
 		$scope.playedCards.push($scope.allCards[$scope.currCard].card_id);
-		console.log($scope.playedCards);		
+	
 		if ($scope.playedCards.length < $scope.allCards.length) {
 			$scope.currCard++;
 		}
 		else {
-			//TODO: add in post of played cards
-			$scope.playedCards = [];
-			$scope.currCard = 0;
+			console.log($scope.playedCards); //TODO : $http.post('/', $scope.playedCards).success(function() { })
 			$scope.getCards();	
 		}
 	}
 	
-	$scope.submitClues = function() {
-		var sendData = new Object();
-		sendData.timer = $scope.game.timer;
-		sendData.clues = $scope.clues;
-		sendData.usedCards = $scope.playedCards;
-		console.log(sendData);	//TODO:add in post	
-	}
-	
-	$scope.endRound = function() {
-		console.log('timer end');	
+	$scope.postClues = function() {
+		var s = $scope.initPostObject();
+		s.user_input.end =  'sameCard';
+		//$http.post('/', $scope.playedCards).success(function(data, status, headers, config) {}); //post played cards, uncomment when live
+		console.log(s);	//TODO:add in post
+		window.location = '#/game-monitor/'+$scope.game.game_id;
 	}
 	
 	$scope.getCards = function() {
 		$http.get('data/fetchCards.js').success(function(data) {
 			$scope.allCards = data;
+			$scope.playedCards = [];
+			$scope.currCard = 0;
 		})	
 	}
+	// END: ClUE FUNCS
+	
+	// **START: GUESSING FUNCS**
+	$scope.addGuess = function() {
+		if ($scope.clientInput.guessText != '' && $scope.clientInput.guessText != null) {
+			var mainWord = new RegExp($scope.card.main_word, "gi");
+			var guess = $scope.clientInput.guessText.trim();
+			$scope.guesses.push(guess);
+			var test = mainWord.test(guess);
+			if (test) {
+				$scope.game.score++;
+				$scope.postGuesses("guessed");
+				alert("Correct!");
+			}
+			else {
+				alert("incorrect!");
+				$scope.displayGuesses.splice(0, 0, guess);
+				$scope.clientInput.guessText = '';
+			}		
+		}
+		else {
+			alert("Your guess has no text");
+		}
+	}
+	
+	$scope.postGuesses = function(actionType) {
+		var s = $scope.initPostObject();
+		sendData.user_id.end = actionType;
+		console.log(sendData); //TODO: replace with POST
+		window.location = '#/game-monitor/'+$scope.game.game_id;
+	}
+	// END: GUESSING FUNCS
 }])
 
-tabooControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
-	$http.get('phones/' + $routeParams.phoneId + '.js').success(function(data) {
-		$scope.phone = data;
-		$scope.mainImageUrl = data.images[0];
-	 })
-	$scope.setImage = function(imageUrl) {
-		$scope.mainImageUrl = imageUrl;
-		$('body').fadeOut().fadeIn();
+tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
+	$scope.clientInput = {};
+	$http.get('data/'+$routeParams.gameID+'.js').success(function(data) {
+		$scope.game = data;
+	})
+	
+	$scope.checkMessages = function() {
+		$http.get('data/messages.js').success(function(data) { //TODO: update with gameid for real call
+			$scope.messages = data;
+			console.log(data);
+		})
 	}
-}]);
-
-tabooControllers.controller('staticContent', ['$scope','$location', function($scope,$location) {
-	$scope.activeLink = function(linkLoc){
-		return linkLoc === $location.path();		
+		
+	$scope.sendMessage = function() {
+		var sendData = {};
+		sendData.user = "U1234567"; //TODO: replace with dynamic current user
+		sendData.text = $scope.clientInput.messageText;
+		console.log(sendData); //TODO: replace with actual POST, and request messages again on success of post, to get message user just wrote
 	}
+	
+	$scope.toDashboard = function() {
+		clearInterval(repeatMsgCheck);
+		window.location = '#/dashboard';	
+	}
+	
+	$scope.checkMessages();
+	var repeatMsgCheck = setInterval($scope.checkMessages, 20000);
 }])
 																		 
 /*******FILTERS******/
@@ -97,12 +235,6 @@ var tabooFilters = angular.module('tabooFilters', []).filter('gameSort', functio
 	return function(input) {
 		return input.state == 'unaccepted';
 	};
-});
-
-tabooFilters.filter('checkmarkColor', function() {
-	return function(input) {
-		return input ? 'green' : 'red'
-	}
 });
 
 /****DIRECTIVES****/
@@ -120,7 +252,6 @@ tabooDirectives.directive('roundTimer', ['$interval', function($interval) {
 						element.text((scope.game).timer -= 1);
 					}
 					else {
-						console.log('end inside timer');
 						$interval.cancel(stopTime);
 						scope.endRound();
 					}
