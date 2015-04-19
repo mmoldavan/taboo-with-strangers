@@ -10,9 +10,10 @@ class Game
   field :player2, type: String
   field :score, type: Integer, default: 0
   field :state, type: String
-  field :current_round, type: String
+  field :current_round, type: String, default: 0
   field :awaiting, type: String
-  field :turns, type: Array
+  field :turns, type: Array, default: []
+  field :current_turn_type, type: String, default: "clue"
 
   index({ player1: 1 }, { unique: false })
   index({ player2: 1 }, { unique: false })
@@ -23,7 +24,7 @@ class Game
   validate :valid_player2
 
   def valid_state
-    errors.add(:state, 'invalid state') unless ['unmatched','pending','inprogress', 'complete'].include? self.state
+    errors.add(:state, 'invalid state') unless ['init','inprogress','declined','complete'].include? self.state
   end
 
   def valid_player1
@@ -53,11 +54,24 @@ class Game
   end
 
 
-  def turn_previous
-    return {
-      result: turns.last.result,
-      responses: turns.last.responses
-    }
+  def previous_turn
+    if self.turns.length > 0
+      return {
+        result: self.turns.last.result,
+        responses: self.turns.last.responses,
+        card_id: self.turns.last.card_id,
+        timer: self.turns.last.timer,
+        type: self.turns.last.type
+      }
+    else
+      return {
+        result: nil,
+        responses: nil,
+        card_id: nil,
+        timer: nil,
+        type: nil
+      }
+    end
 
   end
 

@@ -8,20 +8,20 @@ class GameController < ApplicationController
   end
 
   def automatch
-    game = Game.where({state: 'unmatched'}).first;
+    game = Game.where({state: 'init', player2: nil}).first;
 
     #Is there a game waiting for a player?
     if game
       game.join(params["userid"]);
-
-      save_and_render(game);
-
     #Create a game
     else
       game = Game.initiate_automatch(params["userid"]);
 
-      save_and_render(game);
     end
+
+    game.save!
+
+    render json: game_json_full(game)
 
   end
 
@@ -38,7 +38,7 @@ class GameController < ApplicationController
       game.state = 'inprogress'
       game.save!
 
-      render json: game;
+      render json: game_json_full(game);
     else
       render json: {error: 'game not pending'}, status: 400;
     end
@@ -121,8 +121,16 @@ class GameController < ApplicationController
 
   def game_json_full(game)
     player2 = game.player1 == params["userid"] ? game.player2 : game.player1;
-    player2_name = User.where({user_id: player2}).first.username;
+    if player2
+      player2_name = User.where({user_id: player2}).first.username;
+    else
+      player2_name = nil
+    end
     awaiting = game.awaiting == params["userid"] ? "you" : "player2";
+
+    previous_turn = game.previous_turn();
+
+    p previous_turn;
 
     return {
       game_id: game.game_id,
@@ -135,12 +143,12 @@ class GameController < ApplicationController
       awaiting: awaiting,
       current_round: game.current_round,
       turn_previous: {
-        result: game.turns.last.result,
-        responses: games.turns.last.responses
+        result: previous_turn[:result],
+        responses: previous_turn[:responses]
       },
-      turn_type: game.turns.last.type,
-      card: game.turns.last.card_id,
-      timer: game.turns.last.timer,
+      turn_type: game.current_turn_type,
+      card: previous_turn[:card_id],
+      timer: previous_turn[:timer],
       updated_at: game.updated_at
 
     }
@@ -148,7 +156,11 @@ class GameController < ApplicationController
 
   def game_json_short(game)
     player2 = game.player1 == params["userid"] ? game.player2 : game.player1;
-    player2_name = User.where({user_id: player2}).first.username;
+        if player2
+      player2_name = User.where({user_id: player2}).first.username;
+    else
+      player2_name = nil
+    end
     awaiting = game.awaiting == params["userid"] ? "you" : "player2";
 
     return {
