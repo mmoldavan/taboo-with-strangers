@@ -11,11 +11,13 @@ Rails.application.routes.draw do
   post 'user/:userid' => 'user#update'
   get 'user/:userid/games' => 'game#list_by_user'
   get 'user/:userid/users' => 'user#index_with_playing'
+  get 'user/:userid/:gameid' => 'game#status_check'
 
   post 'game/automatch' => 'game#automatch'
   post 'game/challenge' => 'game#challenge'
   get 'game/:gameid/accept' => 'game#accept'
   get 'game/:gameid' => 'game#retrieve'
+  post 'game/:gameid' => 'game#update_game'
   post 'game/:gameid/cards/:cardid/clue' => 'game#add_clue'
   post 'game/:gameid/cards/:cardid/clue/:clueid/markread' => 'game#mark_clue_read'
 

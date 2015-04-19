@@ -12,7 +12,10 @@ class Game
   field :player2, type: String
   field :score, type: Integer, default: 0
   field :state, type: String
-  field :turn, type: String
+  field :turn_type, type: String
+  field :current_round, type: String
+  field :awaiting, type: String
+  field :turns, type: Array
 
   index({ player1: 1 }, { unique: false })
   index({ player2: 1 }, { unique: false })
@@ -72,6 +75,15 @@ class Game
         card_id: card.card_id
       })
     end
+  end
+
+
+  def turn_previous
+    return {
+      result: turns.last.result,
+      responses: turns.last.responses
+    }
+
   end
 
   def self.initiate_automatch(player)

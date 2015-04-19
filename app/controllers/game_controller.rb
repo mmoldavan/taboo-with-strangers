@@ -50,6 +50,7 @@ class GameController < ApplicationController
     Game.any_of({player1: params["userid"]}, {player2: params["userid"]}).each do |game|
       player2 = game.player1 == params["userid"] ? game.player2 : game.player1;
       player2_name = User.where({user_id: player2}).first.username;
+      awaiting = game.awaiting == params["userid"] ? "you" : "player2";
 
       games << {
         game_id: game.game_id,
@@ -59,7 +60,7 @@ class GameController < ApplicationController
           },
         score: game.score,
         state: game.state,
-        awaiting: game.awaiting == params["userid"] ? "you","player2"
+        awaiting: awaiting
 
       }
     end
@@ -98,6 +99,27 @@ class GameController < ApplicationController
     game = Game.where({game_id: params["gameid"]}).first;
 
     render json: game;
+  end
+
+  def update_game
+    game = Game.where({game_id: params["gameid"]}).first;
+
+    game.score = params["score"];
+    game.timer = params["timer"];
+    game.current_turn.end = params["user_input"]["end"];
+    game.current_turn.responses = params["user_input"]["responses"];
+
+  end
+
+  def status_check
+    game = Game.where({game_id: params["gameid"]}).first;
+    awaiting = game.awaiting == params["userid"] ? "you" : "player2";
+  
+    render json: {
+      state: game.state,
+      awaiting: awaiting
+    };
+      
   end
 
   def save_and_render(game)
