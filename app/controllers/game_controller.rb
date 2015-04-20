@@ -85,6 +85,8 @@ class GameController < ApplicationController
 
   def get_cards
     cards = [];
+    randoms = [];
+    card_count = Card.count;
 
     5.times do
       #
@@ -104,7 +106,7 @@ class GameController < ApplicationController
       cards << card.card_id;
     end
 
-    render json: cards
+    render json: {cards: cards}
 
   end
 
