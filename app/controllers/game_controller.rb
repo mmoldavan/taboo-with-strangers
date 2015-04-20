@@ -70,6 +70,7 @@ class GameController < ApplicationController
       game.turns.last[:timer] = params["timer"];
       game.turns.last[:result] = params["user_input"]["result"];
       game.turns.last[:responses] = params["user_input"]["responses"];
+      game.turns.last[:card_id] = params["user_input"]["card_id"];
       game.turns.last[:type] = game.current_turn_type;
       game.current_round += 1 if game.turns.last[:result] == 'endRound';
 
