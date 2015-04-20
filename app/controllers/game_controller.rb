@@ -83,33 +83,6 @@ class GameController < ApplicationController
     end
   end
 
-  def get_cards
-    cards = [];
-    randoms = [];
-    card_count = Card.count;
-
-    5.times do
-      #
-      #loop do
-      #  random = rand(card_count);
-      #  break if !randoms.include? random
-      #end
-      
-      #randoms << random unless randoms.include? rand(card_count);
-
-      randoms << rand(card_count);
-    end
-
-    randoms.each do |random|
-      card = Card.skip(random).first;
-
-      cards << card.card_id;
-    end
-
-    render json: {cards: cards}
-
-  end
-
   def status_check
     game = Game.where({game_id: params["gameid"]}).first;
     awaiting = game.awaiting == params["userid"] ? "you" : "player2";

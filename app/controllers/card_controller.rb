@@ -5,12 +5,7 @@ class CardController < ApplicationController
     cards = []
 
     Card.each do |card|
-      cards << {
-        word: card.word,
-        forbiddenWords: card.forbiddenWords,
-        allForbiddenWords: card.allForbiddenWords,
-        difficulty: card.difficulty
-      };
+      cards << card_json_full(card);
     end
 
     render json: cards;
@@ -26,7 +21,7 @@ class CardController < ApplicationController
     });
 
     if card.save
-      render json: card;
+      render json: card_json_full(card);
     else
       render json: {error: card.errors }, status: 400;
     end
@@ -42,7 +37,7 @@ class CardController < ApplicationController
     card.difficulty = params["difficulty"];
 
     if card.save
-      render json: card;
+      render json: card_json_full(card);
     else
       render json: {error: card.errors }, status: 400;
     end
@@ -56,10 +51,46 @@ class CardController < ApplicationController
     card = Card.where({card_id: params["cardid"]}).first;
 
     if card.save
-      render json: card;
+      render json: card_json_full(card);
     else
       render json: {error: card.errors }, status: 400;
     end
   end
 
+  def get_cards
+    cards = [];
+    randoms = [];
+    card_count = Card.count;
+
+    5.times do
+      #
+      #loop do
+      #  random = rand(card_count);
+      #  break if !randoms.include? random
+      #end
+      
+      #randoms << random unless randoms.include? rand(card_count);
+
+      randoms << rand(card_count);
+    end
+
+    randoms.each do |random|
+      card = Card.skip(random).first;
+
+      cards << card_json_full(card);
+    end
+
+    render json: {cards: cards}
+
+  end
+
+  def card_json_full(card)
+    return {
+      card_id: card.card_id,
+      word: card.word,
+      forbiddenWords: card.forbiddenWords,
+      allForbiddenWords: card.allForbiddenWords,
+      difficulty: card.difficulty
+    };
+  end
 end

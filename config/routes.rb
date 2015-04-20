@@ -16,8 +16,8 @@ Rails.application.routes.draw do
   post 'game/automatch' => 'game#automatch'
   post 'game/challenge' => 'game#challenge'
   get 'game/:gameid/accept' => 'game#accept'
-  
-  get 'game/:gameid/nextcards' => 'game#get_cards'
+
+  get 'game/:gameid/nextcards' => 'card#get_cards'
   get 'game/:gameid/:userid' => 'game#retrieve'
   post 'game/:gameid' => 'game#update_game'
 
