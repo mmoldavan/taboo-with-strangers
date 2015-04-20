@@ -180,7 +180,7 @@ class GameController < ApplicationController
         score: game.score,
         state: game.state,
         awaiting: awaiting,
-        game_multipler: game.multipler
+        game_multipler: game.multiplier
 
       }
   end
