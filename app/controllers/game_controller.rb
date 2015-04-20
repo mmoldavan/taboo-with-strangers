@@ -64,20 +64,23 @@ class GameController < ApplicationController
   def update_game
     game = Game.where({game_id: params["gameid"]}).first;
 
-    game.score = params["score"];
-    game.turns << {};
-    game.turns.last[:timer] = params["timer"];
-    game.turns.last[:result] = params["user_input"]["result"];
-    game.turns.last[:responses] = params["user_input"]["responses"];
-    game.turns.last[:type] = game.current_turn_type;
-    game.current_round += 1 if game.turns.last[:result] == 'guessed';
+    if game.awaiting == params["user_id"]
+      game.score = params["score"];
+      game.turns << {};
+      game.turns.last[:timer] = params["timer"];
+      game.turns.last[:result] = params["user_input"]["result"];
+      game.turns.last[:responses] = params["user_input"]["responses"];
+      game.turns.last[:type] = game.current_turn_type;
+      game.current_round += 1 if game.turns.last[:result] == 'endRound';
 
-    game.current_turn_type = game.current_turn_type == "clue" ? "guess" : "clue";
-    game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
+      game.current_turn_type = game.current_turn_type == "clue" ? "guess" : "clue";
+      game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
 
-    game.save
-
-    render json: game_json_full(game)
+      game.save
+      render json: game_json_full(game)
+    else
+      render json: {error: "it ain't your turn!"}
+    end
   end
 
   def get_cards
