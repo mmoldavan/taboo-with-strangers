@@ -27,7 +27,7 @@ Rails.application.routes.draw do
   get 'card/:cardid' => 'card#retrieve'
 
   post 'messages/:gameid' => 'message#create'
-  get 'messages/:gameid/:userid' => 'message#index'
+  get 'messages/:gameid/:user_id' => 'message#index'
 
 
   # Example of regular route:
