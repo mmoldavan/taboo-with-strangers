@@ -26,6 +26,9 @@ Rails.application.routes.draw do
   post 'card/:cardid' => 'card#update'
   get 'card/:cardid' => 'card#retrieve'
 
+  post 'messages/:gameid' => 'message#create'
+  get 'messages/:gameid/:userid' => 'message#index'
+
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
