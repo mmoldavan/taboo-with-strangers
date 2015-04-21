@@ -4,7 +4,7 @@ class MessageController < ApplicationController
   def index
     messages = []
 
-    Message.where({game_id: params["game_id"]}).each do |message|
+    Message.where({game_id: params["gameid"]}).each do |message|
       messages << message_json_full(message);
     end
 
@@ -14,7 +14,7 @@ class MessageController < ApplicationController
 
   def create
     message = Message.new({
-      game_id: params["game_id"],
+      game_id: params["gameid"],
       text: params["text"],
       user: params["user_id"],
     });
@@ -28,10 +28,10 @@ class MessageController < ApplicationController
   end
 
   def message_json_full(message)
-    user = User.where({user_id: message.user}).first;
+    username = (message.user == params["user_id"]) ? "you" : "player2";
 
     return {
-      user: user.username,
+      user: username,
       text: message.text,
       created_at: message.created_at
     };

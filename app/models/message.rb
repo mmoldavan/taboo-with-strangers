@@ -4,7 +4,7 @@ class Message
   include Mongoid::Timestamps
 
   field :game_id, type: String
-  field :user, type: Integer
+  field :user, type: String
   field :text, type: String
 
 end
