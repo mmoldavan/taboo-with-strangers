@@ -73,6 +73,8 @@ class GameController < ApplicationController
       game.turns.last[:card_id] = params["card"];
       game.turns.last[:type] = game.current_turn_type;
 
+      game.played_cards << params["card"] if !game.played_cards.include? (params["card"]);
+
       if game.turns.last[:result] == 'endRound'
         game.current_round += 1;
         game.current_turn_type = "clue";

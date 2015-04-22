@@ -25,4 +25,15 @@ class User
 
   end
 
+  def stringify_errors
+    error_text = ""
+
+    self.errors.each do |key, value|
+      error_text << "#{key} #{value}";
+    end
+
+    return error_text
+
+  end
+
 end

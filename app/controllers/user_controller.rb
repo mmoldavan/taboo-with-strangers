@@ -51,7 +51,7 @@ class UserController < ApplicationController
     if user.save
       render json: user;
     else
-      render json: {error: user.errors }, status: 400;
+      render json: {error: user.stringify_errors }, status: 400;
     end
   end
 

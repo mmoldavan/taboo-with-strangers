@@ -17,6 +17,7 @@ class Game
   field :current_turn_type, type: String, default: "clue"
   field :current_clue_giver, type: String
   field :current_guesser, type: String
+  field :played_cards, type: Array, default: []
 
 
   index({ player1: 1 }, { unique: false })
