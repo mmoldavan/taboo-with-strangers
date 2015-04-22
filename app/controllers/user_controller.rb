@@ -22,7 +22,7 @@ class UserController < ApplicationController
       playing << game.player1 == params["userid"] ? game.player2 : game.player1;
     end
 
-    User.each do |user|
+    User.ne({user_id: params["userid"]}).each do |user|
       users << {
         user_id: user.user_id,
         username: user.username,
