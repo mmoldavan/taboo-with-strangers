@@ -14,8 +14,9 @@ class Game
   field :current_round, type: Integer, default: 1
   field :awaiting, type: String
   field :turns, type: Array, default: []
-  
-  
+  field :this_turn_results, type: Array, default: []
+  field :last_turn_results, type: Array, default: []
+
   field :current_turn_type, type: String, default: "clue"
   field :current_clue_giver, type: String
   field :current_guesser, type: String
