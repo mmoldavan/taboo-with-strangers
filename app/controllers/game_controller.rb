@@ -70,11 +70,19 @@ class GameController < ApplicationController
       game.turns.last[:timer] = params["timer"];
       game.turns.last[:result] = params["user_input"]["result"];
       game.turns.last[:responses] = params["user_input"]["responses"];
-      game.turns.last[:card_id] = params["user_input"]["card_id"];
+      game.turns.last[:card_id] = params["card"];
       game.turns.last[:type] = game.current_turn_type;
-      game.current_round += 1 if game.turns.last[:result] == 'endRound';
 
-      if game.turns.last[:result] != 'taboo' && game.turns.last[:result] != 'skipped'
+      if game.turns.last[:result] == 'endRound'
+        game.current_round += 1;
+        game.current_turn_type = "clue";
+
+        temp = game.current_guesser;
+        game.current_guesser = game.current_clue_giver;
+        game.current_clue_giver = temp;
+        game.awaiting = game.current_clue_giver;
+
+      elsif game.turns.last[:result] != 'taboo' && game.turns.last[:result] != 'skipped'
         game.current_turn_type = game.current_turn_type == "clue" ? "guess" : "clue";
         game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
       end

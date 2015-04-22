@@ -15,6 +15,9 @@ class Game
   field :awaiting, type: String
   field :turns, type: Array, default: []
   field :current_turn_type, type: String, default: "clue"
+  field :current_clue_giver, type: String
+  field :current_guesser, type: String
+
 
   index({ player1: 1 }, { unique: false })
   index({ player2: 1 }, { unique: false })
@@ -41,11 +44,12 @@ class Game
   end
 
   def start
-    
+
   end
 
   def join(player)
     self.player2 = player;
+    self.current_guesser = player;
     self.start();
   end
 
@@ -80,7 +84,8 @@ class Game
     game = Game.new({
       player1: player,
       state: 'init',
-      awaiting: player
+      awaiting: player,
+      current_clue_giver: player
     });
     game.init_cards();
 
@@ -92,7 +97,9 @@ class Game
       player1: player,
       player2: opponent,
       state: 'init',
-      awaiting: opponent
+      awaiting: opponent,
+      current_guesser: player,
+      current_clue_giver: opponent
       });
     game.init_cards();
 
