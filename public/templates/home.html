@@ -1,17 +1,18 @@
 <!-- !!HOME content!! -->
-<div ng-class="{hide: !activeLink('/home')}"> 
+<div ng-if="!activeLink('/home')"> 
     <h1>Taboo with Strangers</h1>
     <p class="lead">A fun word game with players across the globe.</p>
 	<form role="form">
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" value="" />
+            <label for="username">Username</label>
+            <input type="text" ng-model="lForm.username" class="form-control" id="username" value="" />
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" value="" />
+            <input type="password" ng-model="lForm.password" class="form-control" id="password" value="" />
         </div>
     </form>
+    <p class="bg-danger" ng-if="lForm.errorMessage != null">{{lForm.errorMessage}}</p>
     <p><a href="" ng-click="submitData()"  class="btn btn-block btn-info btn-lg" role="button">Log in</a></p>
     <p style="text-align:center; font-size:1.2em;">Or</p>
     <div class="row">

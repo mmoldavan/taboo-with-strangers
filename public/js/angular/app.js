@@ -1,11 +1,11 @@
-var tabooApp = angular.module('tabooApp', ['ngRoute','tabooControllers', 'tabooFilters', 'tabooDirectives']);
+var tabooApp = angular.module('tabooApp', ['ngRoute', 'ngCookies','tabooControllers', 'tabooFilters', 'tabooDirectives']);
 
 tabooApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/home', {
         templateUrl: 'templates/home.html',
-        controller: 'staticContent'
+        controller: 'logUserIn'
       }).
       when('/about', {
         templateUrl: 'templates/home.html',
@@ -13,7 +13,7 @@ tabooApp.config(['$routeProvider',
       }).
 	  when('/register', {
         templateUrl: 'templates/register.html',
-        controller: 'staticContent'
+        controller: 'register'
       }).
 	  when('/dashboard', {
         templateUrl: 'templates/dashboard.html',
@@ -27,7 +27,7 @@ tabooApp.config(['$routeProvider',
         templateUrl: 'templates/game-monitor.html',
         controller: 'monitor'
       }).
-	  when('/play/:gameID/:userID', {
+	  when('/play/:gameID', {
         templateUrl: 'templates/play.html',
         controller: 'play'
       }).

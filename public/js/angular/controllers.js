@@ -1,10 +1,79 @@
 // JavaScript Document
 var tabooControllers = angular.module('tabooControllers', []);
-var tabooUser = { userid: "U083236785", username:"TestUser1", points: 0}; //to be put in cookie dynamically 
+//var tabooUser = { userid: "U083236785", username:"TestUser1", points: 0}; //to be put in cookie dynamically 
 
-tabooControllers.controller('staticContent', ['$scope','$location', function($scope,$location) {
+tabooControllers.controller('staticContent', ['$scope','$location', '$cookies', function($scope,$location,$cookies) {
+	if ($cookies.tabooUser  != null && $cookies.tabooUser.userid != null && $cookies.tabooUser.userid != '') { //we're logged in	
+		$scope.loggedin = true;
+	}
+	else {
+		$scope.loggedin = false;
+	}
+	
+	console.log($scope.loggedin);
+	
 	$scope.activeLink = function(linkLoc){
+		if (linkLoc == '/home' && ($location.path() == '/home' || $location.path() == '/dashboard'))
+			return true; 
 		return linkLoc === $location.path();		
+	}
+	
+	$scope.goHome = function() {
+		if ($scope.loggedin)
+			window.location = '#/dashboard';	
+		else
+			window.location = '#/home';
+	}
+	$scope.logMeOut = function() {
+		$cookies.tabooUser = null;
+		$scope.loggedin = false;
+		window.location = '#/home';	
+	}
+}])
+
+tabooControllers.controller('register', ['$scope', '$http', '$cookies', function ($scope, $http, $cookies) {
+	$scope.submitData = function() {
+		var sendData = {};
+		sendData.username = $scope.regForm.username;
+		sendData.password = $scope.regForm.password;
+		sendData.email = $scope.regForm.email;
+		sendData.country = $scope.regForm.country;
+		sendData.city = $scope.regForm.city;
+		console.log(sendData);		
+		$http.post('/user', sendData).success(function(data) { console.log(data)
+			  	// set the cookie
+				$cookies.tabooUser = { userid: data.user_id, username: data.username};
+				$scope.loggedin = true;
+				window.location = '#/dashboard'
+		
+		}).error(function(data, status, headers, config) {
+    		$scope.regError = data.error;
+  		});
+	}
+}])
+
+tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookies', function ($scope, $http, $cookies) {
+	$scope.lForm = {}; 
+	$scope.submitData = function() {
+		var sendData = {}
+		console.log($scope.lForm);
+		sendData.username = $scope.lForm.username;
+		sendData.password = $scope.lForm.password;
+		
+		$http.post('/user/login', sendData).success(function(data) { 
+				console.log(data)
+			  	// set the cookie
+				if (data.valid_user) {
+					$cookies.tabooUser = { userid: data.user_id, username: $scope.lForm.username};
+					$scope.loggedin = true;
+					window.location = '#/dashboard'
+				}
+				else
+					$scope.lForm.errorMessage = "Invalid username/password";
+		
+		}).error(function(data, status, headers, config) {
+			
+  		});	
 	}
 }])
 
@@ -40,7 +109,7 @@ tabooControllers.controller('newGame', ['$scope','$http', function($scope,$http)
 
 tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
 	$scope.checkGameStatus = function() {
-		$http.get('data/checkGameState.js').success(function(response) {
+		$http.get('/user/'+tabooUser.userid+'/'+$routeParams.gameID).success(function(response) {
 			if (response.state != 'complete' && response.awaiting == 'you') {
 				clearInterval(repeatCheck);
 				window.location = '#/play/' + $routeParams.gameID;
@@ -57,7 +126,7 @@ tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', functi
 }])
 
 tabooControllers.controller('play', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
-	$http.get('/game/'+$routeParams.gameID+'/'+$routeParams.userID).success(function(data) {
+	$http.get('/game/'+$routeParams.gameID+'/'+tabooUser.userid).success(function(data) {
 		$scope.game = data;
 		$scope.clientInput = {};
 		
@@ -71,14 +140,13 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 			if ($scope.game.turn_previous.end == 'sameCard') {
 				$http.get('/card/'+data.card).success(function(cardData) {
 					$scope.allCards =  [cardData];
-					$scope.playedCards = [];
 					$scope.currCard = 0;						
 				})
 			}
 			else //otherwise get all new cards
 				$scope.getCards();
 			
-			$scope.game.updateMessage = $scope.game.player2;
+			$scope.game.updateMessage = $scope.game.player2.username;
 			switch($scope.game.turn_previous.result) {
 				case 'guessed':
 					$scope.game.updateMessage += " guessed correctly. Time for a new card!";
@@ -109,14 +177,13 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 			})
 			
 			// set the update message appropriately
-			$scope.game.updateMessage = $scope.game.player2;
-			switch($scope.game.turn_previous.end) {
-				case 'skipped':
-					$scope.game.updateMessage += " requested to skip the card you were playing. You'll see clues for the new card."
+			if ( $scope.game.turn_history.length > 1)
+				$scope.game.updateMessage = $scope.game.player2.username + " in their turn " + $scope.game.turn_history.pop().toString().replace("taboo", "taboo-ed") + ".\n";
+			switch($scope.game.turn_previous.result) {
 				case 'sameCard':
-					$scope.game.updateMessage += " has sent you new clues for the same card you were playing.";
+					$scope.game.updateMessage += $scope.game.player2.username + " has sent you clues. for the same card you were playing.";
 				case 'endRound':
-					$scope.game.udpateMessage = "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";	
+					$scope.game.udpateMessage += "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";
 			}
 			$scope.game.updateMessageShow = 'yes';
 			setTimeout(function() { angular.element('#dismiss-msg').trigger('click'); }, 7000);
@@ -127,31 +194,47 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 		$scope.game.updateMessageShow = 'no';	
 	}
 	
-	$scope.initPostObject = function() {
+	$scope.postObject = function(whichResult) {
 		var sendData = {};
 		sendData.user_input = {};
+		sendData.user_input.responses = $scope.game.turn_type == 'clue' ? $scope.clues : $scope.guesses;
+		$scope.clues = []; //reset
+		$scope.displayClues = [];
+		$scope.guesses = [];
+		$scope.displayGuesses = [];
+		sendData.user_input.result = whichResult;
 		sendData.user_id = tabooUser.userid;
 		sendData.timer = $scope.game.timer;
 		sendData.score = $scope.game.score;
-		return sendData;
+		sendData.card = $scope.allCards[$scope.currCard].card_id;
+		console.log(sendData);
+		$http.post('/game/'+$scope.game.game_id, sendData).success(function(data) {});
 	}
 	
 	$scope.endRound = function() {
-		var s = $scope.initPostObject();
-		s.user_input.responses = $scope.game.turn_type == 'clue' ? $scope.clues : $scope.guesses;
-		s.user_input.result = "endRound";
-		s.card = null; //end of round, will never be proceeding with same card
-		$http.post('/game/challenge', sendData).success(function(data) {
-		})
-		console.log('timer end. POST:'); //TODO: replace with real post
-		console.log(s);
-		//window.location = '#/game-monitor/'+$scope.game.game_id;	//TODO: turn this back on when we're ready
+		$scope.postObject("endRound");
+		//window.location = '#/game-monitor/'+$scope.game.game_id+'/'+tabooUser.userid;
 	}
 	
 	// **START: ClUE FUNCS**	
 	$scope.addClue = function() {
 		if ($scope.clientInput.clueText != '' && $scope.clientInput.clueText != null) {
-			/***TODO: implement function for checking if it's taboo!**/
+			var clueTextClean = $scope.clientInput.clueText.match(/[a-zA-Z0-9]+/gi, ""); //accept only letters or numbers as valid word input
+			console.log(clueTextClean);
+			for (i = 0; i < clueTextClean.length; i++) {
+				currClue = clueTextClean[i];
+				var patt = new RegExp(currClue, "gi");
+					for (j = 0; j < $scope.allCards[$scope.currCard].allForbiddenWords.length; j++) {
+						if (patt.test($scope.allCards[$scope.currCard].allForbiddenWords[j].toLowerCase())) {
+								alert('Taboo word!');
+								$scope.game.score--;
+								$scope.nextCard('taboo');
+								$scope.clientInput.clueText = '';
+								return;
+						}
+					}
+			}
+			// it passes so add it to the clue array
 			$scope.displayClues.splice(0, 0, $scope.clientInput.clueText);
 			$scope.clues.push($scope.clientInput.clueText);
 			$scope.clientInput.clueText = '';
@@ -162,30 +245,24 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 	
 	}
 	
-	$scope.nextCard = function() {
-		$scope.playedCards.push($scope.allCards[$scope.currCard].card_id);
-	
-		if ($scope.playedCards.length < $scope.allCards.length) {
+	$scope.nextCard = function(why) {	
+		$scope.postObject(why);
+		if ($scope.currCard.length < $scope.allCards.length) {
 			$scope.currCard++;
 		}
 		else {
-			console.log($scope.playedCards); //TODO : $http.post('/', $scope.playedCards).success(function() { })
-			$scope.getCards();	
+			$scope.getCards();
 		}
 	}
 	
 	$scope.postClues = function() {
-		var s = $scope.initPostObject();
-		s.user_input.end =  'sameCard';
-		//$http.post('/', $scope.playedCards).success(function(data, status, headers, config) {}); //post played cards, uncomment when live
-		console.log(s);	//TODO:add in post
+		$scope.postObject("sameCard");
 		window.location = '#/game-monitor/'+$scope.game.game_id;
 	}
 	
 	$scope.getCards = function() {
 		$http.get('/game/'+$routeParams.gameID+'/nextcards').success(function(data) {
 			$scope.allCards = data.cards;
-			$scope.playedCards = [];
 			$scope.currCard = 0;
 		})	
 	}
@@ -215,9 +292,7 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 	}
 	
 	$scope.postGuesses = function(actionType) {
-		var s = $scope.initPostObject();
-		sendData.user_id.end = actionType;
-		console.log(sendData); //TODO: replace with POST
+		$scope.postObject(actionType);
 		window.location = '#/game-monitor/'+$scope.game.game_id;
 	}
 	// END: GUESSING FUNCS
@@ -225,22 +300,32 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 
 tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
 	$scope.clientInput = {};
-	$http.get('data/'+$routeParams.gameID+'.js').success(function(data) {
+	$http.get('/game/'+$routeParams.gameID+'/'+tabooUser.userid).success(function(data) {
 		$scope.game = data;
 	})
 	
 	$scope.checkMessages = function() {
-		$http.get('data/messages.js').success(function(data) { //TODO: update with gameid for real call
-			$scope.messages = data;
+		$http.get('/messages/'+$routeParams.gameID+'/'+tabooUser.userid).success(function(data) {
+			$scope.messages = data.messages;
+			for (i = 0; i < $scope.messages.length; i++) {
+				var msg = $scope.messages[i];
+				var thisDate = new Date(msg.created_at);
+				var formatted =  thisDate.getMonth()+'/'+thisDate.getDate()+' @ '+thisDate.getHours()+':'+thisDate.getMinutes(); 
+				msg.time = formatted;	
+			}
 			console.log(data);
 		})
 	}
 		
 	$scope.sendMessage = function() {
 		var sendData = {};
-		sendData.user = "U1234567"; //TODO: replace with dynamic current user
+		sendData.user = tabooUser.userid;
 		sendData.text = $scope.clientInput.messageText;
-		console.log(sendData); //TODO: replace with actual POST, and request messages again on success of post, to get message user just wrote
+		$http.post('/messages/'+$scope.game.game_id, sendData).success(function(data) {
+			console.log(sendData);
+			$scope.checkMessages();
+		});		
+		
 	}
 	
 	$scope.toDashboard = function() {
