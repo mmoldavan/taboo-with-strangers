@@ -19,7 +19,7 @@ tabooApp.config(['$routeProvider',
         templateUrl: 'templates/dashboard.html',
         controller: 'dashboard'
       }).
-	  when('/new-game', {
+	  when('/game-new', {
         templateUrl: 'templates/game-new.html',
         controller: 'newGame'
       }).
@@ -27,7 +27,7 @@ tabooApp.config(['$routeProvider',
         templateUrl: 'templates/game-monitor.html',
         controller: 'monitor'
       }).
-	  when('/play/:gameID', {
+	  when('/play/:gameID/:userID', {
         templateUrl: 'templates/play.html',
         controller: 'play'
       }).

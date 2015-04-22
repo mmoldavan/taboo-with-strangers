@@ -18,9 +18,9 @@
     
     <!-- !!CLUE!! -->
     <div ng-if="game.turn_type == 'clue'">
-        <p class="main-word lead text-center">{{allCards[currCard].main_word}}</p>
+        <p class="main-word lead text-center">{{allCards[currCard].word}}</p>
         <ul class="forbidden-words text-center">
-            <li ng-repeat="word in allCards[currCard].forbidden_words" class="text-danger">
+            <li ng-repeat="word in allCards[currCard].forbiddenWords" class="text-danger">
                 {{word}}
             </li>
         </ul>
@@ -38,7 +38,7 @@
                     </ol>
                 </div>
                 <div class="col-md-6">
-                    <strong>Guesses:</strong>
+                    <strong>Guesses:</strong> <span ng-if"game.turn_previous.responses == null">No guesses yet!</span>
                     <ol id="past-guesses">
                         <li ng-repeat="guess in game.turn_previous.responses">{{guess}}</li>
                     </ol>
