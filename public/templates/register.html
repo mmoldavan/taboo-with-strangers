@@ -2,23 +2,24 @@
 <form role="form">
     <div class="form-group">
     	<label for="email">Email</label>
-    	<input type="email" class="form-control" id="email" value="" />
+    	<input type="email" required ng-model="regForm.email" class="form-control" id="email" value="" />
     </div>
     <div class="form-group">
     	<label for="password">Password</label>
-    	<input type="password" class="form-control" id="password" value="" />
+    	<input type="password" required ng-model="regForm.password" class="form-control" id="password" value="" />
     </div>
     <div class="form-group">
     	<label for="username">User Name</label>
-    	<input type="text" class="form-control" id="username" value="" />
+    	<input type="text" required ng-model="regForm.username" class="form-control" id="username" value="" />
     </div>
     <div class="form-group">
     	<label for="country">Country</label>
-    	<input type="text" class="form-control" id="country" value="" />
+    	<input type="text" required ng-model="regForm.country" class="form-control" id="country" value="" />
     </div>
     <div class="form-group">
     	<label for="city">City</label>
-    	<input type="text" class="form-control" id="city" value="" />
+    	<input type="text" ng-model="regForm.city" class="form-control" id="city" value="" />
     </div>
-    <p><a href="" ng-click="submitData()" class="btn btn-block btn-warning btn-lg" role="button">Submit</a></p>
+    <p><a ng-click="submitData()" class="btn btn-block btn-warning btn-lg" role="button">Submit</a></p>
+    <p class="bg-danger">{{regError}}</p>
 </form>
