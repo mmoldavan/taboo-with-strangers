@@ -8,7 +8,7 @@ class GameController < ApplicationController
   end
 
   def automatch
-    game = Game.where({state: 'init', player2: nil}).first;
+    game = Game.where({state: 'init', player2: nil}).ne({player1: params["userid"]}).first;
 
     #Is there a game waiting for a player?
     if game

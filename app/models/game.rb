@@ -11,7 +11,7 @@ class Game
   field :score, type: Integer, default: 0
   field :multiplier, type: Float, default: 1.5
   field :state, type: String
-  field :current_round, type: Integer, default: 0
+  field :current_round, type: Integer, default: 1
   field :awaiting, type: String
   field :turns, type: Array, default: []
   field :current_turn_type, type: String, default: "clue"
@@ -41,7 +41,7 @@ class Game
   end
 
   def start
-    self.current_round = 0;
+    
   end
 
   def join(player)
@@ -69,7 +69,7 @@ class Game
         result: nil,
         responses: nil,
         card_id: nil,
-        timer: nil,
+        timer: 120,
         type: nil
       }
     end
