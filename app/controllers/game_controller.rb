@@ -74,8 +74,10 @@ class GameController < ApplicationController
       game.turns.last[:type] = game.current_turn_type;
       game.current_round += 1 if game.turns.last[:result] == 'endRound';
 
-      game.current_turn_type = game.current_turn_type == "clue" ? "guess" : "clue";
-      game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
+      if game.turns.last[:result] != 'taboo' && game.turns.last[:result] != 'skipped'
+        game.current_turn_type = game.current_turn_type == "clue" ? "guess" : "clue";
+        game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
+      end
 
       game.save
       render json: game_json_full(game)
@@ -114,7 +116,11 @@ class GameController < ApplicationController
 
     previous_turn = game.previous_turn();
 
-    p previous_turn;
+    turn_history = []
+
+    game.turns.each do |turn|
+      turn_history << turn[:result];
+    end
 
     return {
       game_id: game.game_id,
@@ -126,6 +132,7 @@ class GameController < ApplicationController
       state: game.state,
       awaiting: awaiting,
       current_round: game.current_round,
+      turn_history: turn_history,
       turn_previous: {
         result: previous_turn[:result],
         responses: previous_turn[:responses]
