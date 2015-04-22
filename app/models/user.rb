@@ -12,6 +12,7 @@ class User
   field :avatar, type: String
   field :city, type: String
   field :country, type: String
+  field :total_score, type: Integer, default: 0
 
   index({ username: 1 }, { unique: true })
 

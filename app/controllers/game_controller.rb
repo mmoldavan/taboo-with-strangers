@@ -89,6 +89,14 @@ class GameController < ApplicationController
         game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
       end
 
+      if game.state == "init" && game.player2 != nil
+        game.state = "inprogress"
+      end
+
+      if game.current_round > 5
+        game.state = "complete"
+      end
+
       game.save
       render json: game_json_full(game)
     else

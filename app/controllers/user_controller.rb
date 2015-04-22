@@ -49,7 +49,7 @@ class UserController < ApplicationController
       });
 
     if user.save
-      render json: user;
+      render json: json_full_user(user);
     else
       render json: {error: user.stringify_errors }, status: 400;
     end
@@ -67,14 +67,14 @@ class UserController < ApplicationController
       user.save!;
     end
 
-    render json: user;
+    render json: json_full_user(user);
   end
 
   def show
     user = User.where({username: params["username"]}).first;
 
     if user
-      render json: user;
+      render json: json_full_user(user);
     else
       render json: {error: "User doesn't exist"}, status: 400;
     end
@@ -92,6 +92,21 @@ class UserController < ApplicationController
   end
 
   def destroy
+
+  end
+
+  def json_full_user(user)
+    return {
+      user_id: user.user_id,
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar,
+      city: user.city,
+      country: user.country,
+      total_score: user.total_score,
+      created_at: user.created_at,
+      updated_at: user.updated_at
+    }
 
   end
 end

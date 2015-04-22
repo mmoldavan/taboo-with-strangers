@@ -4,7 +4,7 @@ class MessageController < ApplicationController
   def index
     messages = []
 
-    Message.where({game_id: params["gameid"]}).desc(:updated_at).each do |message|
+    Message.where({game_id: params["gameid"]}).desc(:created_at).each do |message|
       messages << message_json_full(message);
     end
 
