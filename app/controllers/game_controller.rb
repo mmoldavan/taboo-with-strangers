@@ -51,7 +51,12 @@ class GameController < ApplicationController
       games << game_json_short(game)
     end
 
-    render json: games
+    user = User.where({user_id: params["userid"]}).first;
+
+    render json: {
+      user_score: user.total_score,
+      games: games
+    }
 
   end
 
