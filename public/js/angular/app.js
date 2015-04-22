@@ -27,7 +27,7 @@ tabooApp.config(['$routeProvider',
         templateUrl: 'templates/game-monitor.html',
         controller: 'monitor'
       }).
-	  when('/play/:gameID/:userID', {
+	  when('/play/:gameID', {
         templateUrl: 'templates/play.html',
         controller: 'play'
       }).
