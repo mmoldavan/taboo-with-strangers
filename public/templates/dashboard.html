@@ -1,34 +1,34 @@
 <div>
-    <h2>UserName</h2>
-    <p>Total Points</p>
+    <h2>{{tabooUser.username}}</h2>
+    <p>Total Points: {{tabooUser.points}}</p>
     <a href="#/game-new" class="btn btn-block btn-warning btn-lg" role="button">Start New Game</a>
     
     <h3>My New Game Requests</h3>
     <ul>
     	<li ng-repeat="game in myGames" ng-if="game.state == 'init'">
-        	<h4>{{game.player2.name}}</h4>
-            <p class="multiplier">Game Multiplier: {{game.game_multiplier}}</p>
-            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}" class="btn btn-info">Accept</a></p>
-            <p ng-if="game.awaiting == 'player2'" class="text-muted">Awaiting Response From {{game.player2.name}}</p>
+        	<h4>{{game.player2.username == null ? "AutoMatched Teammate" : game.player2.username}}</h4>
+            <p class="multiplier">Game Multiplier: {{game.game_multipler}}</p>
+            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}/{{tabooUser.userid}}" class="btn btn-info">{{game.player2.username == null ? "Continue" : "Accept"}}</a></p>
+            <p ng-if="game.awaiting == 'player2'" class="text-muted">Awaiting Response From {{game.player2.username == null ? "AutoMatched Teammate" : game.player2.username}}</p>
         </li>
     </ul>
     
     <h3>My Current Games</h3>
     <ul>
     	<li ng-repeat="game in myGames" ng-if="game.state == 'inprogress'">
-        	<h4>{{game.player2.name}}</h4>
+        	<h4>{{game.player2.username}}</h4>
             <p class="score">Current score: {{game.score}}</p>
-            <p class="multiplier">Game Multiplier: {{game.game_multiplier}}</p>
-            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}" class="btn btn-info">Continue</a></p>
-            <p ng-if="game.awaiting == 'player2'" class="text-muted">Awaiting Response From {{game.player2.name}}</p>
+            <p class="multiplier">Game Multiplier: {{game.game_multipler}}</p>
+            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}/{{tabooUser.userid}}" class="btn btn-info">Continue</a></p>
+            <p ng-if="game.awaiting == 'player2'" class="text-muted">Awaiting Response From {{game.player2.username}}</p>
         </li>
         <li ng-repeat="game in myGames" ng-if="game.state == 'complete'">
-        	<h4>{{game.player2.name}} - Completed</h4>
+        	<h4>{{game.player2.username}} - Completed</h4>
             <p class="score">Final score: {{game.score}}</p>
             <p><a href="#/game-end/{{game.game_id}}" class="btn btn-info">Message</a></p>
         </li>
         <li ng-repeat="game in myGames" ng-if="game.state == 'declined'">
-        	<h4>{{game.player2.name}}</h4>
+        	<h4>{{game.player2.username}}</h4>
             <p>Game Declined.</p>
             <p><a href="" class="btn btn-danger">Dismiss</a></p>
         </li>
