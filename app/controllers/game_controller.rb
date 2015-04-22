@@ -104,7 +104,7 @@ class GameController < ApplicationController
         game.state = "inprogress"
       end
 
-      if game.current_round > 5
+      if game.current_round > 1
         game.state = "complete"
       end
 
