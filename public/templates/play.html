@@ -1,6 +1,6 @@
 <div id="update-message" class="bg-warning" ng-if="game.updateMessageShow == 'yes'">
     <p>{{game.updateMessage}}</p>
-    <ol id="past-guesses">
+    <ol ng-if="game.turntype == 'clue'" id="past-guesses">
         <li ng-repeat="guess in game.turn_previous.responses">{{guess}}</li>
     </ol>
     <p><a class="btn btn-block btn-danger" id="dismiss-msg" role="button" ng-click="dismissUpdate()">Dismiss Update Message</a></p>
@@ -40,7 +40,7 @@
                 <div class="col-md-6">
                     <strong>Guesses:</strong> <span ng-if"game.turn_previous.responses == null">No guesses yet!</span>
                     <ol id="past-guesses">
-                        <li ng-repeat="guess in game.turn_previous.responses">{{guess}}</li>
+                        <li ng-if="game.turn_previous.result != 'guessed'" ng-repeat="guess in game.turn_previous.responses">{{guess}}</li>
                     </ol>
                 </div>
             </div>

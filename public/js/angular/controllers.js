@@ -2,14 +2,13 @@
 var tabooControllers = angular.module('tabooControllers', []);
 //var tabooUser = { userid: "U083236785", username:"TestUser1", points: 0}; //to be put in cookie dynamically 
 
-tabooControllers.controller('staticContent', ['$scope','$location', '$cookies', function($scope,$location,$cookies) {
-	if ($cookies.tabooUser  != null && $cookies.tabooUser.userid != null && $cookies.tabooUser.userid != '') { //we're logged in	
+tabooControllers.controller('nav', ['$scope','$location', '$cookieStore', function($scope,$location,$cookieStore) {
+	if ($cookieStore.get('tabooUser')  != null) { //we're logged in	
 		$scope.loggedin = true;
 	}
 	else {
 		$scope.loggedin = false;
-	}
-	
+	}	
 	console.log($scope.loggedin);
 	
 	$scope.activeLink = function(linkLoc){
@@ -19,19 +18,19 @@ tabooControllers.controller('staticContent', ['$scope','$location', '$cookies', 
 	}
 	
 	$scope.goHome = function() {
-		if ($scope.loggedin)
+		if ($cookieStore.get('tabooUser') != null)
 			window.location = '#/dashboard';	
 		else
 			window.location = '#/home';
 	}
 	$scope.logMeOut = function() {
-		$cookies.tabooUser = null;
+		$cookieStore.put('tabooUser',null);
 		$scope.loggedin = false;
 		window.location = '#/home';	
 	}
 }])
 
-tabooControllers.controller('register', ['$scope', '$http', '$cookies', function ($scope, $http, $cookies) {
+tabooControllers.controller('register', ['$scope', '$http', '$cookieStore', function ($scope, $http, $cookieStore) {
 	$scope.submitData = function() {
 		var sendData = {};
 		sendData.username = $scope.regForm.username;
@@ -42,7 +41,7 @@ tabooControllers.controller('register', ['$scope', '$http', '$cookies', function
 		console.log(sendData);		
 		$http.post('/user', sendData).success(function(data) { console.log(data)
 			  	// set the cookie
-				$cookies.tabooUser = { userid: data.user_id, username: data.username};
+				$cookieStore.put('tabooUser',{ userid: data.user_id, username: data.username});
 				$scope.loggedin = true;
 				window.location = '#/dashboard'
 		
@@ -52,7 +51,10 @@ tabooControllers.controller('register', ['$scope', '$http', '$cookies', function
 	}
 }])
 
-tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookies', function ($scope, $http, $cookies) {
+tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookieStore', function ($scope, $http, $cookieStore) {
+	if ($cookieStore.get('tabooUser')  != null) { //we're logged in	
+		window.location = '#/dashboard';
+	}
 	$scope.lForm = {}; 
 	$scope.submitData = function() {
 		var sendData = {}
@@ -64,8 +66,9 @@ tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookies', functio
 				console.log(data)
 			  	// set the cookie
 				if (data.valid_user) {
-					$cookies.tabooUser = { userid: data.user_id, username: $scope.lForm.username};
+					$cookieStore.put('tabooUser',{ userid: data.user_id, username: $scope.lForm.username});
 					$scope.loggedin = true;
+					console.log($cookieStore.get('tabooUser').userid);
 					window.location = '#/dashboard'
 				}
 				else
@@ -77,21 +80,22 @@ tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookies', functio
 	}
 }])
 
-tabooControllers.controller('dashboard', ['$scope', '$http', function ($scope, $http) {
-  	$http.get('/user/'+tabooUser.userid+'/games').success(function(data) {
+tabooControllers.controller('dashboard', ['$scope', '$http', '$cookieStore', function ($scope, $http, $cookieStore) {
+  	$scope.tabooUser = $cookieStore.get('tabooUser');
+	$scope.loggedin = true;
+	$http.get('/user/'+$cookieStore.get('tabooUser').userid+'/games').success(function(data) {
 		$scope.myGames = data;
-		$scope.tabooUser = tabooUser;
   	});
 }]);
 
-tabooControllers.controller('newGame', ['$scope','$http', function($scope,$http) {
-	$http.get('/user/'+tabooUser.userid+'/users').success(function(data) {
+tabooControllers.controller('newGame', ['$scope','$http', '$cookieStore', function($scope,$http,$cookieStore) {
+	$http.get('/user/'+$cookieStore.get('tabooUser').userid+'/users').success(function(data) {
 		$scope.users = data;
   	});
 	
 	$scope.newGame = function(whichPlayer) {
 		var sendData = {};
-		sendData.userid = tabooUser.userid;
+		sendData.userid = $cookieStore.get('tabooUser').userid;
 		sendData.opponent = whichPlayer;
 		$http.post('/game/challenge', sendData).success(function(data) {
 			window.location = '#/dashboard';
@@ -101,15 +105,15 @@ tabooControllers.controller('newGame', ['$scope','$http', function($scope,$http)
 	}
 	
 	$scope.automatch = function() {
-		$http.post('/game/automatch', { userid: tabooUser.userid}).success(function(data) {
-			window.location = '#/play/'+data.game_id+'/'+tabooUser.userid;
+		$http.post('/game/automatch', { userid: $cookieStore.get('tabooUser').userid}).success(function(data) {
+			window.location = '#/play/'+data.game_id+'/'+$cookieStore.get('tabooUser').userid;
 		})	
 	}
 }])
 
-tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
+tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
 	$scope.checkGameStatus = function() {
-		$http.get('/user/'+tabooUser.userid+'/'+$routeParams.gameID).success(function(response) {
+		$http.get('/user/'+$cookieStore.get('tabooUser').userid+'/'+$routeParams.gameID).success(function(response) {
 			if (response.state != 'complete' && response.awaiting == 'you') {
 				clearInterval(repeatCheck);
 				window.location = '#/play/' + $routeParams.gameID;
@@ -125,8 +129,8 @@ tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', functi
 	var repeatCheck = setInterval($scope.checkGameStatus, 20000); // check every 20 secs
 }])
 
-tabooControllers.controller('play', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
-	$http.get('/game/'+$routeParams.gameID+'/'+tabooUser.userid).success(function(data) {
+tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
+	$http.get('/game/'+$routeParams.gameID+'/'+$cookieStore.get('tabooUser').userid).success(function(data) {
 		$scope.game = data;
 		$scope.clientInput = {};
 		
@@ -172,7 +176,7 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 			$scope.guesses = [];
 			$scope.displayGuesses = [];
 			// get the card we are guessing against
-			$http.get('data/'+data.card+'.js').success(function(cardData) {
+			$http.get('/card/'+data.card).success(function(cardData) {
 				$scope.card = cardData;
 			})
 			
@@ -181,7 +185,7 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 				$scope.game.updateMessage = $scope.game.player2.username + " in their turn " + $scope.game.turn_history.pop().toString().replace("taboo", "taboo-ed") + ".\n";
 			switch($scope.game.turn_previous.result) {
 				case 'sameCard':
-					$scope.game.updateMessage += $scope.game.player2.username + " has sent you clues. for the same card you were playing.";
+					$scope.game.updateMessage += $scope.game.player2.username + " has sent you clues.";
 				case 'endRound':
 					$scope.game.udpateMessage += "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";
 			}
@@ -203,17 +207,17 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 		$scope.guesses = [];
 		$scope.displayGuesses = [];
 		sendData.user_input.result = whichResult;
-		sendData.user_id = tabooUser.userid;
+		sendData.user_id = $cookieStore.get('tabooUser').userid;
 		sendData.timer = $scope.game.timer;
 		sendData.score = $scope.game.score;
-		sendData.card = $scope.allCards[$scope.currCard].card_id;
+		sendData.card = $scope.game.turn_type == 'clue' ? $scope.allCards[$scope.currCard].card_id : $scope.card;
 		console.log(sendData);
 		$http.post('/game/'+$scope.game.game_id, sendData).success(function(data) {});
 	}
 	
 	$scope.endRound = function() {
-		$scope.postObject("endRound");
-		//window.location = '#/game-monitor/'+$scope.game.game_id+'/'+tabooUser.userid;
+		//$scope.postObject("endRound");
+		//window.location = '#/game-monitor/'+$scope.game.game_id+'/'+$cookieStore.tabooUser.userid;
 	}
 	
 	// **START: ClUE FUNCS**	
@@ -226,7 +230,7 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 				var patt = new RegExp(currClue, "gi");
 					for (j = 0; j < $scope.allCards[$scope.currCard].allForbiddenWords.length; j++) {
 						if (patt.test($scope.allCards[$scope.currCard].allForbiddenWords[j].toLowerCase())) {
-								alert('Taboo word!');
+								alert('Taboo word! ' + $scope.allCards[$scope.currCard].allForbiddenWords[j]);
 								$scope.game.score--;
 								$scope.nextCard('taboo');
 								$scope.clientInput.clueText = '';
@@ -298,14 +302,14 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', function(
 	// END: GUESSING FUNCS
 }])
 
-tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', function($scope,$http,$routeParams) {
+tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
 	$scope.clientInput = {};
-	$http.get('/game/'+$routeParams.gameID+'/'+tabooUser.userid).success(function(data) {
+	$http.get('/game/'+$routeParams.gameID+'/'+$cookieStore.get('tabooUser').userid).success(function(data) {
 		$scope.game = data;
 	})
 	
 	$scope.checkMessages = function() {
-		$http.get('/messages/'+$routeParams.gameID+'/'+tabooUser.userid).success(function(data) {
+		$http.get('/messages/'+$routeParams.gameID+'/'+$cookieStore.get('tabooUser').userid).success(function(data) {
 			$scope.messages = data.messages;
 			for (i = 0; i < $scope.messages.length; i++) {
 				var msg = $scope.messages[i];
@@ -319,7 +323,7 @@ tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', functi
 		
 	$scope.sendMessage = function() {
 		var sendData = {};
-		sendData.user = tabooUser.userid;
+		sendData.user = $cookieStore.get('tabooUser').userid;
 		sendData.text = $scope.clientInput.messageText;
 		$http.post('/messages/'+$scope.game.game_id, sendData).success(function(data) {
 			console.log(sendData);

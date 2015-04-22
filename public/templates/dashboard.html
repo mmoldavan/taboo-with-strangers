@@ -8,7 +8,7 @@
     	<li ng-repeat="game in myGames" ng-if="game.state == 'init'">
         	<h4>{{game.player2.username == null ? "AutoMatched Teammate" : game.player2.username}}</h4>
             <p class="multiplier">Game Multiplier: {{game.game_multipler}}</p>
-            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}/{{tabooUser.userid}}" class="btn btn-info">{{game.player2.username == null ? "Continue" : "Accept"}}</a></p>
+            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}" class="btn btn-info">{{game.player2.username == null ? "Continue" : "Accept"}}</a></p>
             <p ng-if="game.awaiting == 'player2'" class="text-muted">Awaiting Response From {{game.player2.username == null ? "AutoMatched Teammate" : game.player2.username}}</p>
         </li>
     </ul>
@@ -19,7 +19,7 @@
         	<h4>{{game.player2.username}}</h4>
             <p class="score">Current score: {{game.score}}</p>
             <p class="multiplier">Game Multiplier: {{game.game_multipler}}</p>
-            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}/{{tabooUser.userid}}" class="btn btn-info">Continue</a></p>
+            <p ng-if="game.awaiting == 'you'"><a href="#/play/{{game.game_id}}" class="btn btn-info">Continue</a></p>
             <p ng-if="game.awaiting == 'player2'" class="text-muted">Awaiting Response From {{game.player2.username}}</p>
         </li>
         <li ng-repeat="game in myGames" ng-if="game.state == 'complete'">

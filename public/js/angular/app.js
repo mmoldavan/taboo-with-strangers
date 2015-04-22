@@ -8,8 +8,8 @@ tabooApp.config(['$routeProvider',
         controller: 'logUserIn'
       }).
       when('/about', {
-        templateUrl: 'templates/home.html',
-        controller: 'staticContent'
+        templateUrl: 'templates/about.html',
+        controller: 'nav'
       }).
 	  when('/register', {
         templateUrl: 'templates/register.html',
@@ -35,7 +35,7 @@ tabooApp.config(['$routeProvider',
         templateUrl: 'templates/game-end.html',
         controller: 'endGame'
       }).
-      otherwise({
+      otherwise({ 
         redirectTo: '/home'
       });
   }]);
