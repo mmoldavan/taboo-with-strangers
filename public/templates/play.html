@@ -9,27 +9,32 @@
 <div id="play-body" ng-if="game.updateMessageShow == 'no'">
     <div class="row">
         <div class="col-xs-6">
-            <p>Player 2: {{game.player2.username}} | Round: {{game.current_round}}</p>
+            <p>Player 2: <strong>{{game.player2.username}}</strong> <br />
+            Round: <strong>{{game.current_round}}</strong></p>
         </div>
-        <div class="col-sm-2 col-sm-offset-4 col-xs-4 col-xs-offset-2">
-            <p>Score: {{game.score}}</p>
+        <div class="col-xs-6 text-right">
+            <p>Score: <strong>{{game.score}}</strong> <br />
+            <span class="time-counter text-center">Time: <span round-timer="">{{game.timer}}</span></span></p>
         </div>
-    </div>
-    <p class="time-counter text-center">Time Remaining: <span round-timer="">{{game.timer}}</span></p>
+    </div>   
     
     <!-- !!CLUE!! -->
     <div ng-if="game.turn_type == 'clue'">
-        <p class="main-word lead text-center">{{allCards[currCard].word}}</p>
-        <ul class="forbidden-words text-center">
-            <li ng-repeat="word in allCards[currCard].forbiddenWords" class="text-danger">
-                {{word}}
-            </li>
-        </ul>
+        <div class="panel panel-primary">
+  			<div class="panel-heading"><h2 style="font-size:1.2em;font-weight:bold;" class="panel-title text-center">{{allCards[currCard].word}}</h2></div>
+                <div class="panel-body">
+                    <ul class="list-unstyled text-center">
+                        <li ng-repeat="word in allCards[currCard].forbiddenWords" class="text-danger">
+                            {{word}}
+                        </li>
+                    </ul>
+             	</div>
+            </div>
             <p><textarea name="clue-text" ng-model="clientInput.clueText" class="form-control" rows="2"></textarea></p>
             <p><a class="btn btn-block btn-warning" role="button" ng-click="addClue()">Add Clue</a></p>
             <div class="row">
                 <div class="col-xs-6"><p><a class="btn btn-block btn-danger" role="button" ng-click="nextCard('skipped')">Skip Card</a></p></div>
-                <div class="col-xs-6"><p><a class="btn btn-block btn-info" role="button" ng-click="postClues()">Send to Guesser</a></p></div>
+                <div class="col-xs-6"><p><a class="btn btn-block btn-success" role="button" ng-click="postClues()">Send to Guesser</a></p></div>
             </div>
             <div class="row">
                 <div class="col-md-6">
@@ -50,17 +55,17 @@
     <!-- !!GUESS!! -->
     <div ng-if="game.turn_type == 'guess'">
         <strong>Clues Given:</strong>
-        <ul>
-            <li ng-repeat="word in game.turn_previous.responses">{{word}}</li>
+        <ul class="list-group">
+            <li class="list-group-item" ng-repeat="word in game.turn_previous.responses">{{word}}</li>
         </ul>
         <p><textarea name="guess-text" ng-model="clientInput.guessText" class="form-control" rows="1"></textarea></p>
         <p><a class="btn btn-block btn-warning" role="button" ng-click="addGuess()">Submit Guess</a></p>
         <div class="row">
             <div class="col-xs-6"><p><a class="btn btn-block btn-danger" role="button" ng-click="postGuesses('skipped')">Skip Card</a></p></div>
-            <div class="col-xs-6"><p><a class="btn btn-block btn-info" role="button" ng-click="postGuesses('sameCard')">Get More Clues</a></p></div>
+            <div class="col-xs-6"><p><a class="btn btn-block btn-success" role="button" ng-click="postGuesses('sameCard')">Get More Clues</a></p></div>
         </div>
-        <ol id="past-guesses">
         <strong>Guesses:</strong>
+        <ol id="past-guesses">
             <li ng-repeat="guess in displayGuesses">{{guess}}</li>
         </ol>
     </div>

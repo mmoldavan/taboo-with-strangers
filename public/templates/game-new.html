@@ -1,13 +1,17 @@
 <div>
     <p><a ng-click="automatch()" class="btn btn-block btn-warning btn-lg" role="button">Random Match!</a></p>
-	Search: <input ng-model="searchText" />
-    <h3>All users</h3>
-    <ul>
-    	<li ng-repeat="user in users | filter:searchText">
-        	<h4>{{user.username}}</h4>
-            <p ng-class="{success: user.online}">{{user.online ? "Online" : "Offline"}}</p>
-            <p ng-if="user.currently_playing">(Already Playing)</p>
-            <p><a ng-click="newGame(user.user_id)" class="btn btn-info">Send New Game Request</a></p>
-        </li>
-    </ul>
+	<p class="lead">Search: <input ng-model="searchText" /></p>
+    <div class="panel panel-default">
+  		<div class="panel-heading"><h3 class="panel-title">All users</h3></div>
+      	<div class="panel-body">
+            <ul class="list-unstyled game-list">
+                <li ng-repeat="user in users | filter:searchText">
+                    <h4>{{user.username}}</h4>
+                    <p ng-class="{success: user.online}">{{user.online ? "Online" : "Offline"}}</p>
+                    <p ng-if="user.currently_playing">(Already Playing)</p>
+                    <p><a ng-click="newGame(user.user_id)" class="btn btn-info">Send New Game Request</a></p>
+                </li>
+    		</ul>
+        </div>
+	</div>
 </div>
