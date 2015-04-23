@@ -106,6 +106,13 @@ class GameController < ApplicationController
 
       if game.current_round > 1
         game.state = "complete"
+        user1 = User.where({user_id: game.player1}).first;
+        user1.total_score += game.score;
+        user2 = User.where({user_id: game.player2}).first;
+        user2.total_score += game.score;
+        user1.save
+        user2.save
+
       end
 
       game.save
