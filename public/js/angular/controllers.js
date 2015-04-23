@@ -97,7 +97,7 @@ tabooControllers.controller('dashboard', ['$scope', '$http', '$cookieStore', fun
 		window.location = where;	
 	}
 	$scope.checkGames();
-	var repeatCheck = setInterval($scope.checkGames, 10000); // check every 20 secs
+	var repeatCheck = setInterval($scope.checkGames, 7000); // check every 20 secs
 	
 }]);
 
@@ -139,7 +139,7 @@ tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', '$cook
 		})
 	}
 	
-	var repeatCheck = setInterval($scope.checkGameStatus, 10000); // check every 10 secs for demo purposes
+	var repeatCheck = setInterval($scope.checkGameStatus, 7000); // check every 10 secs for demo purposes
 }])
 
 tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
@@ -338,7 +338,12 @@ tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', '$cook
 			for (i = 0; i < $scope.messages.length; i++) {
 				var msg = $scope.messages[i];
 				var thisDate = new Date(msg.created_at);
-				var formatted =  thisDate.getMonth()+'/'+thisDate.getDate()+' @ '+thisDate.getHours()+':'+thisDate.getMinutes(); 
+				var thisHour = thisDate.getHours();
+				if (thisHour < 1 || thisHour > 12)
+					thisHour = Math.abs(thisHour - 12);
+				var thisMin = thisDate.getMinutes() < 10 ? '0'+thisDate.getMinutes() : thisDate.getMinutes();
+				var ampm = thisDate.getHours() >= 12 ? "pm" : "am"; 
+				var formatted =  thisDate.getMonth()+'/'+thisDate.getDate()+' @ '+thisHour+':'+thisMin+' '+ampm; 
 				msg.time = formatted;	
 			}
 			console.log(data);
@@ -347,12 +352,13 @@ tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', '$cook
 		
 	$scope.sendMessage = function() {
 		var sendData = {};
-		sendData.user = $cookieStore.get('tabooUser').userid;
+		sendData.user_id = $cookieStore.get('tabooUser').userid;
 		sendData.text = $scope.clientInput.messageText;
 		$http.post('/messages/'+$scope.game.game_id, sendData).success(function(data) {
 			console.log(sendData);
 			$scope.checkMessages();
-		});		
+		});	
+		$scope.clientInput.messageText = '';	
 		
 	}
 	
@@ -362,7 +368,7 @@ tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', '$cook
 	}
 	
 	$scope.checkMessages();
-	var repeatMsgCheck = setInterval($scope.checkMessages, 20000);
+	var repeatMsgCheck = setInterval($scope.checkMessages, 7000);
 }])
 																		 
 /*******FILTERS******/
