@@ -83,9 +83,22 @@ tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookieStore', fun
 tabooControllers.controller('dashboard', ['$scope', '$http', '$cookieStore', function ($scope, $http, $cookieStore) {
   	$scope.tabooUser = $cookieStore.get('tabooUser');
 	$scope.loggedin = true;
-	$http.get('/user/'+$cookieStore.get('tabooUser').userid+'/games').success(function(data) {
-		$scope.myGames = data;
-  	});
+	
+	$scope.checkGames = function() {	
+		$http.get('/user/'+$cookieStore.get('tabooUser').userid+'/games').success(function(data) {
+			console.log(data);
+			$scope.myGames = data.games;
+			$scope.points = data.user_score;
+		});
+	}
+	
+	$scope.goTo = function (where) {
+		clearInterval(repeatCheck);
+		window.location = where;	
+	}
+	$scope.checkGames();
+	var repeatCheck = setInterval($scope.checkGames, 10000); // check every 20 secs
+	
 }]);
 
 tabooControllers.controller('newGame', ['$scope','$http', '$cookieStore', function($scope,$http,$cookieStore) {
@@ -126,7 +139,7 @@ tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', '$cook
 		})
 	}
 	
-	var repeatCheck = setInterval($scope.checkGameStatus, 20000); // check every 20 secs
+	var repeatCheck = setInterval($scope.checkGameStatus, 10000); // check every 10 secs for demo purposes
 }])
 
 tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
@@ -139,13 +152,12 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 		{
 			$scope.clues = [];	
 			$scope.displayClues = [];
+			$scope.allCards = [];
 			$scope.game.updateMessageShow;
 			// if we are playing the same card as last time, fetch it
-			if ($scope.game.turn_previous.end == 'sameCard') {
-				$http.get('/card/'+data.card).success(function(cardData) {
-					$scope.allCards =  [cardData];
-					$scope.currCard = 0;						
-				})
+			if ($scope.game.turn_previous.result == 'sameCard') {
+					$scope.allCards = [$scope.game.card];
+					$scope.currCard = 0;
 			}
 			else //otherwise get all new cards
 				$scope.getCards();
@@ -154,12 +166,16 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 			switch($scope.game.turn_previous.result) {
 				case 'guessed':
 					$scope.game.updateMessage += " guessed correctly. Time for a new card!";
+					break;
 				case 'skipped':
-					$scope.game.updateMessage += " requested to skip the current card. Time for a new card!"
+					$scope.game.updateMessage += " requested to skip the current card. Time for a new card!";
+					break;
 				case 'sameCard':
 					$scope.game.updateMessage += " was not able to guess the card during their turn. Guesses:";
+					break;
 				case 'endRound':
-					$scope.game.udpateMessage = "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";	
+					$scope.game.udpateMessage = "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";
+					break;
 			}
 			//it might be the first round of the game
 			if ($scope.game.turn_previous.result != null) {
@@ -181,11 +197,15 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 			})
 			
 			// set the update message appropriately
-			if ( $scope.game.turn_history.length > 1)
-				$scope.game.updateMessage = $scope.game.player2.username + " in their turn " + $scope.game.turn_history.pop().toString().replace("taboo", "taboo-ed") + ".\n";
+			$scope.game.updateMessage = '';
+			if ( $scope.game.turn_history.length > 1) {
+				$scope.game.turn_history.pop();
+				$scope.game.updateMessage = $scope.game.player2.username + " in their turn " + $scope.game.turn_history.join(", ").replace(/taboo/g, "taboo-ed") + ".";
+				$scope.game.updateMessage += " Time for a new card.";
+			}
 			switch($scope.game.turn_previous.result) {
 				case 'sameCard':
-					$scope.game.updateMessage += $scope.game.player2.username + " has sent you clues.";
+					$scope.game.updateMessage += " "+$scope.game.player2.username + " has sent you clues.";
 				case 'endRound':
 					$scope.game.udpateMessage += "Round " + $scope.game.current_round - 1 + "has ended. Round " + $scope.game.current_round + " begins.";
 			}
@@ -216,8 +236,8 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 	}
 	
 	$scope.endRound = function() {
-		//$scope.postObject("endRound");
-		//window.location = '#/game-monitor/'+$scope.game.game_id+'/'+$cookieStore.tabooUser.userid;
+		$scope.postObject("endRound");
+		window.location = '#/game-monitor/'+$scope.game.game_id+'/'+$cookieStore.get('tabooUser').userid;
 	}
 	
 	// **START: ClUE FUNCS**	
@@ -227,16 +247,20 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 			console.log(clueTextClean);
 			for (i = 0; i < clueTextClean.length; i++) {
 				currClue = clueTextClean[i];
-				var patt = new RegExp(currClue, "gi");
-					for (j = 0; j < $scope.allCards[$scope.currCard].allForbiddenWords.length; j++) {
-						if (patt.test($scope.allCards[$scope.currCard].allForbiddenWords[j].toLowerCase())) {
-								alert('Taboo word! ' + $scope.allCards[$scope.currCard].allForbiddenWords[j]);
+				var forbiddenWords = $scope.allCards[$scope.currCard].allForbiddenWords;
+				for (j = 0; j < forbiddenWords.length; j++) {
+					var forbiddenArray = forbiddenWords[j].split(" ");
+					for (k = 0; k < forbiddenArray.length; k++) {
+					var patt = new RegExp(forbiddenArray[k], "gi");
+						if (patt.test(currClue.toLowerCase())) {
+								alert('Taboo word! ' + forbiddenArray[k]);
 								$scope.game.score--;
 								$scope.nextCard('taboo');
 								$scope.clientInput.clueText = '';
 								return;
 						}
 					}
+				}
 			}
 			// it passes so add it to the clue array
 			$scope.displayClues.splice(0, 0, $scope.clientInput.clueText);
@@ -275,7 +299,7 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 	// **START: GUESSING FUNCS**
 	$scope.addGuess = function() {
 		if ($scope.clientInput.guessText != '' && $scope.clientInput.guessText != null) {
-			var mainWord = new RegExp($scope.card.main_word, "gi");
+			var mainWord = new RegExp($scope.card.word, "gi");
 			var guess = $scope.clientInput.guessText.trim();
 			$scope.guesses.push(guess);
 			var test = mainWord.test(guess);
