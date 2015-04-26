@@ -1,5 +1,7 @@
-<h1>Taboo with Strangers</h1>
-<p class="lead">A fun word game with players across the globe.</p>
+<div class="jumbotron">
+    <h1>Taboo with Strangers <img class="responsive" src="assets/person.png" /></h1>
+    <p class="lead">A fun word game with players across the globe.</p>
+</div>
 <form role="form">
     <div class="form-group">
         <label for="username">Username</label>
@@ -11,13 +13,10 @@
     </div>
 </form>
 <p class="bg-danger" ng-if="lForm.errorMessage != null">{{lForm.errorMessage}}</p>
-<p><a href="" ng-click="submitData()"  class="btn btn-block btn-info btn-lg" role="button">Log in</a></p>
-<p style="text-align:center; font-size:1.2em;">Or</p>
 <div class="row">
-    <div class="col-md-6">
-        <a href="#/register" class="btn btn-block btn-warning btn-lg" role="button">Create an Account</a> 
-    </div>
-    <div class="col-md-6">
-        <a href="#/about" class="btn btn-block btn-warning btn-lg" role="button">How to play</a>
-    </div>
+	<div class="col-xs-6 col-xs-offset-3">
+<p><a href="" ng-click="submitData()"  class="btn btn-block btn-warning btn-lg" role="button">Log in</a></p></div>
 </div>
+<p class="text-center">Don't have an account? <a href="#/register">Register Now!</a></p> 
+<p><a href="#/about" class="btn btn-block btn-success btn-md" role="button">Learn more about Taboo with Strangers</a></p>
+

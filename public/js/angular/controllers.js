@@ -251,13 +251,15 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 				for (j = 0; j < forbiddenWords.length; j++) {
 					var forbiddenArray = forbiddenWords[j].split(" ");
 					for (k = 0; k < forbiddenArray.length; k++) {
-					var patt = new RegExp(forbiddenArray[k], "gi");
-						if (patt.test(currClue.toLowerCase())) {
-								alert('Taboo word! ' + forbiddenArray[k]);
-								$scope.game.score--;
-								$scope.nextCard('taboo');
-								$scope.clientInput.clueText = '';
-								return;
+						if (forbiddenArray[k].length >= 3) {
+							var patt = new RegExp(forbiddenArray[k], "gi");
+							if (patt.test(currClue.toLowerCase())) {
+									alert('Taboo word! ' + forbiddenArray[k]);
+									$scope.game.score--;
+									$scope.nextCard('taboo');
+									$scope.clientInput.clueText = '';
+									return;
+							}
 						}
 					}
 				}
