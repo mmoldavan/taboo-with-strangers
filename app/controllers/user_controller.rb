@@ -7,7 +7,8 @@ class UserController < ApplicationController
     User.each do |user|
       users << {
         user_id: user.user_id,
-        username: user.username
+        username: user.username,
+        user_score: user.total_score
       }
     end
 
