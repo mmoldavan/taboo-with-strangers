@@ -98,6 +98,12 @@ class GameController < ApplicationController
         game.this_turn_results = [];
 
         game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
+      elsif game.turns.last[:result] == 'skipped' && game.current_turn_type == 'guess'
+        game.current_turn_type = game.current_turn_type == "clue" ? "guess" : "clue";
+        game.last_turn_results = game.this_turn_results;
+        game.this_turn_results = [];
+
+        game.awaiting = game.awaiting == game.player1 ? game.player2 : game.player1;
       end
 
       if game.state == "init" && game.player2 != nil
