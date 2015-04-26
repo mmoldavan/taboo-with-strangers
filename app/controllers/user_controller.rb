@@ -4,7 +4,7 @@ class UserController < ApplicationController
   def index
     users = [];
 
-    User.each do |user|
+    User.desc(:total_score).each do |user|
       users << {
         user_id: user.user_id,
         username: user.username,
