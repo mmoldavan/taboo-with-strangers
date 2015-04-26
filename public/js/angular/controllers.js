@@ -80,6 +80,12 @@ tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookieStore', fun
 	}
 }])
 
+tabooControllers.controller('leaderboard', ['$scope', '$http', '$cookieStore', function ($scope, $http, $cookieStore) {
+	$http.get('/user').success(function(data) {
+		$scope.allUsers = data.slice(0,4); 
+	})
+}])
+
 tabooControllers.controller('dashboard', ['$scope', '$http', '$cookieStore', function ($scope, $http, $cookieStore) {
   	$scope.tabooUser = $cookieStore.get('tabooUser');
 	$scope.loggedin = true;
@@ -119,7 +125,10 @@ tabooControllers.controller('newGame', ['$scope','$http', '$cookieStore', functi
 	
 	$scope.automatch = function() {
 		$http.post('/game/automatch', { userid: $cookieStore.get('tabooUser').userid}).success(function(data) {
-			window.location = '#/play/'+data.game_id+'/'+$cookieStore.get('tabooUser').userid;
+			if (data.awaiting == 'you')
+				window.location = '#/play/'+data.game_id;
+			else
+				window.location = '#/dashboard';
 		})	
 	}
 }])
@@ -244,24 +253,17 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 	$scope.addClue = function() {
 		if ($scope.clientInput.clueText != '' && $scope.clientInput.clueText != null) {
 			var clueTextClean = $scope.clientInput.clueText.match(/[a-zA-Z0-9]+/gi, ""); //accept only letters or numbers as valid word input
-			console.log(clueTextClean);
-			for (i = 0; i < clueTextClean.length; i++) {
-				currClue = clueTextClean[i];
-				var forbiddenWords = $scope.allCards[$scope.currCard].allForbiddenWords;
-				for (j = 0; j < forbiddenWords.length; j++) {
-					var forbiddenArray = forbiddenWords[j].split(" ");
-					for (k = 0; k < forbiddenArray.length; k++) {
-						if (forbiddenArray[k].length >= 3) {
-							var patt = new RegExp(forbiddenArray[k], "gi");
-							if (patt.test(currClue.toLowerCase())) {
-									alert('Taboo word! ' + forbiddenArray[k]);
-									$scope.game.score--;
-									$scope.nextCard('taboo');
-									$scope.clientInput.clueText = '';
-									return;
-							}
-						}
-					}
+			var cleanClueWord = clueTextClean.join(" "); //rejoin matches into one phrase
+			console.log(cleanClueWord);
+			var totalForbiddenWords = $scope.allCards[$scope.currCard].allForbiddenWords;
+			for (k = 0; k < totalForbiddenWords.length; k++) {
+				var patt = new RegExp(totalForbiddenWords[k].trim(), "gi");
+				if (patt.test(cleanClueWord.toLowerCase())) {
+						alert('Taboo Word! ' + totalForbiddenWords[k]);
+						$scope.game.score--;
+						$scope.nextCard('taboo');
+						$scope.clientInput.clueText = '';
+						return;
 				}
 			}
 			// it passes so add it to the clue array

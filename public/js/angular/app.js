@@ -15,6 +15,10 @@ tabooApp.config(['$routeProvider',
         templateUrl: 'templates/register.html',
         controller: 'register'
       }).
+	  when('/leaderboard', {
+        templateUrl: 'templates/leaderboard.html',
+        controller: 'leaderboard'
+      }).
 	  when('/dashboard', {
         templateUrl: 'templates/dashboard.html',
         controller: 'dashboard'
