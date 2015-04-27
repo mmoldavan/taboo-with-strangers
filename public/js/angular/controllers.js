@@ -253,16 +253,6 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 		window.location = '#/game-monitor/'+$scope.game.game_id;
 	}
 	
-	$scope.evalSubmit = function(thisEvent) {
-		if (thisEvent.keyCode == 13) {
-			thisEvent.preventDefault();
-			if ($scope.game.turn_type == 'clue')
-				angular.element('#clue-button').trigger('click');
-			else
-				angular.element('#guess-button').trigger('click');
-		}			
-	}
-	
 	// **START: ClUE FUNCS**	
 	$scope.addClue = function() {
 		if ($scope.clientInput.clueText != '' && $scope.clientInput.clueText != null) {
@@ -383,13 +373,6 @@ tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', '$cook
 	$scope.toDashboard = function() {
 		clearInterval(repeatMsgCheck);
 		window.location = '#/dashboard';	
-	}
-	
-	$scope.evalSubmit = function(thisEvent) {
-		if (thisEvent.keyCode == 13) {
-			thisEvent.preventDefault();
-			$scope.sendMessage();
-		}			
 	}
 	
 	$scope.checkMessages();
