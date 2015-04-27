@@ -136,8 +136,6 @@ tabooControllers.controller('newGame', ['$scope','$http', '$cookieStore', functi
 tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
 	$scope.checkGameStatus = function() {
 		$http.get('/user/'+$cookieStore.get('tabooUser').userid+'/'+$routeParams.gameID).success(function(response) {
-			console.log('response');
-			console.log(response);
 			if (response.state != 'complete' && response.awaiting == 'you') {
 				clearInterval(repeatCheck);
 				window.location = '#/play/' + $routeParams.gameID;
@@ -150,7 +148,8 @@ tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', '$cook
 		})
 	}
 	
-	var repeatCheck = setInterval($scope.checkGameStatus, 7000); // check every 10 secs for demo purposes
+	$scope.checkGameStatus(); //run on init
+	var repeatCheck = setInterval($scope.checkGameStatus, 7000); // check every 7 secs for demo purposes
 }])
 
 tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
