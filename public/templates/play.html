@@ -31,7 +31,7 @@
              	</div>
             </div>
             <p><textarea name="clue-text" ng-model="clientInput.clueText" class="form-control" rows="2" ng-keypress="evalSubmit(event=$event)"></textarea></p>
-            <p><a class="btn btn-block btn-warning" role="button" ng-click="addClue()">Add Clue</a></p>
+            <p><a class="btn btn-block btn-warning" id="clue-button" role="button" ng-click="addClue()">Add Clue</a></p>
             <div class="row">
                 <div class="col-xs-6"><p><a class="btn btn-block btn-danger" role="button" ng-click="nextCard('skipped')">Skip Card</a></p></div>
                 <div class="col-xs-6"><p><a class="btn btn-block btn-success" role="button" ng-click="postClues()">Send to Guesser</a></p></div>
@@ -59,7 +59,7 @@
             <li class="list-group-item" ng-repeat="word in game.turn_previous.responses">{{word}}</li>
         </ul>
         <p><textarea name="guess-text" ng-model="clientInput.guessText" class="form-control" rows="1" ng-keypress="evalSubmit(event=$event)"></textarea></p>
-        <p><a class="btn btn-block btn-warning" role="button" ng-click="addGuess()">Submit Guess</a></p>
+        <p><a class="btn btn-block btn-warning" id="guess-button" role="button" ng-click="addGuess()">Submit Guess</a></p>
         <div class="row">
             <div class="col-xs-6"><p><a class="btn btn-block btn-danger" role="button" ng-click="postGuesses('skipped')">Skip Card</a></p></div>
             <div class="col-xs-6"><p><a class="btn btn-block btn-success" role="button" ng-click="postGuesses('sameCard')">Get More Clues</a></p></div>

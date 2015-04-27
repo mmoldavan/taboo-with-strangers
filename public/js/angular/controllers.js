@@ -155,6 +155,8 @@ tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', '$cook
 tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
 	$http.get('/game/'+$routeParams.gameID+'/'+$cookieStore.get('tabooUser').userid).success(function(data) {
 		$scope.game = data;
+		if ($scope.game.awaiting != "you")
+			window.location = '#/game-monitor'+$scope.game.game_id;
 		$scope.clientInput = {};
 		
 		/** INITIALIZE CLUES **/
@@ -253,11 +255,11 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 	
 	$scope.evalSubmit = function(thisEvent) {
 		if (thisEvent.keyCode == 13) {
-			if ($scope.game.turn_type == 'clue')
-				$scope.addClue();
-			else
-				$scope.addGuess();
 			thisEvent.preventDefault();
+			if ($scope.game.turn_type == 'clue')
+				angular.element('#clue-button').trigger('click');
+			else
+				angular.element('#guess-button').trigger('click');
 		}			
 	}
 	
@@ -385,8 +387,8 @@ tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', '$cook
 	
 	$scope.evalSubmit = function(thisEvent) {
 		if (thisEvent.keyCode == 13) {
-			$scope.sendMessage();
 			thisEvent.preventDefault();
+			$scope.sendMessage();
 		}			
 	}
 	
