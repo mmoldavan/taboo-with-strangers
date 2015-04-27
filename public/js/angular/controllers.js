@@ -82,7 +82,7 @@ tabooControllers.controller('logUserIn', ['$scope', '$http', '$cookieStore', fun
 
 tabooControllers.controller('leaderboard', ['$scope', '$http', '$cookieStore', function ($scope, $http, $cookieStore) {
 	$http.get('/user').success(function(data) {
-		$scope.allUsers = data.slice(0,4); 
+		$scope.allUsers = data.slice(0,10); //show top 10
 	})
 }])
 
@@ -136,13 +136,15 @@ tabooControllers.controller('newGame', ['$scope','$http', '$cookieStore', functi
 tabooControllers.controller('monitor', ['$scope','$http', '$routeParams', '$cookieStore', function($scope,$http,$routeParams,$cookieStore) {
 	$scope.checkGameStatus = function() {
 		$http.get('/user/'+$cookieStore.get('tabooUser').userid+'/'+$routeParams.gameID).success(function(response) {
+			console.log('response');
+			console.log(response);
 			if (response.state != 'complete' && response.awaiting == 'you') {
 				clearInterval(repeatCheck);
 				window.location = '#/play/' + $routeParams.gameID;
 			}
 			if (response.state == 'complete') {
 				clearInterval(repeatCheck);
-				window.location = '#/end-game/' + $routeParams.gameID;
+				window.location = '#/game-end/' + $routeParams.gameID;
 			}
 			console.log(response);
 		})
@@ -235,6 +237,7 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 		$scope.displayClues = [];
 		$scope.guesses = [];
 		$scope.displayGuesses = [];
+		$scope.game.turn_previous.responses = [];
 		sendData.user_input.result = whichResult;
 		sendData.user_id = $cookieStore.get('tabooUser').userid;
 		sendData.timer = $scope.game.timer;
@@ -246,14 +249,24 @@ tabooControllers.controller('play', ['$scope','$http', '$routeParams', '$cookieS
 	
 	$scope.endRound = function() {
 		$scope.postObject("endRound");
-		window.location = '#/game-monitor/'+$scope.game.game_id+'/'+$cookieStore.get('tabooUser').userid;
+		window.location = '#/game-monitor/'+$scope.game.game_id;
+	}
+	
+	$scope.evalSubmit = function(thisEvent) {
+		if (thisEvent.keyCode == 13) {
+			if ($scope.game.turn_type == 'clue')
+				$scope.addClue();
+			else
+				$scope.addGuess();
+			thisEvent.preventDefault();
+		}			
 	}
 	
 	// **START: ClUE FUNCS**	
 	$scope.addClue = function() {
 		if ($scope.clientInput.clueText != '' && $scope.clientInput.clueText != null) {
 			var clueTextClean = $scope.clientInput.clueText.match(/[a-zA-Z0-9]+/gi, ""); //accept only letters or numbers as valid word input
-			var cleanClueWord = clueTextClean.join(" "); //rejoin matches into one phrase
+			var cleanClueWord = clueTextClean.join(" "); //rejoin matches into one space-separated phrase
 			console.log(cleanClueWord);
 			var totalForbiddenWords = $scope.allCards[$scope.currCard].allForbiddenWords;
 			for (k = 0; k < totalForbiddenWords.length; k++) {
@@ -369,6 +382,13 @@ tabooControllers.controller('endGame', ['$scope','$http', '$routeParams', '$cook
 	$scope.toDashboard = function() {
 		clearInterval(repeatMsgCheck);
 		window.location = '#/dashboard';	
+	}
+	
+	$scope.evalSubmit = function(thisEvent) {
+		if (thisEvent.keyCode == 13) {
+			$scope.sendMessage();
+			thisEvent.preventDefault();
+		}			
 	}
 	
 	$scope.checkMessages();
